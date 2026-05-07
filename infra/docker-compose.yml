@@ -1,0 +1,17 @@
+# docker-compose alternatif pour developpement local sans installer postgres
+# Lancer : docker compose -f infra/docker-compose.yml up -d
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: reviseplus
+      POSTGRES_PASSWORD: reviseplus
+      POSTGRES_DB: reviseplus
+    ports:
+      - "5432:5432"
+    volumes:
+      - rp_pg:/var/lib/postgresql/data
+
+volumes:
+  rp_pg:

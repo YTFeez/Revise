@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: Inter, ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: radial-gradient(circle at 20% -10%, rgba(91, 95, 220, 0.18), transparent 50%),
+              radial-gradient(circle at 100% 0%, rgba(167, 139, 250, 0.12), transparent 60%),
+              #0f1018;
+  min-height: 100vh;
+}
+
+@layer components {
+  .card {
+    @apply bg-bg-card border border-bg-ring/60 rounded-2xl shadow-sm;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
+           transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-brand-500 hover:bg-brand-400 text-white shadow-glow;
+  }
+  .btn-ghost {
+    @apply btn bg-bg-soft hover:bg-bg-ring text-zinc-200;
+  }
+  .btn-outline {
+    @apply btn bg-transparent border border-bg-ring hover:bg-bg-soft text-zinc-200;
+  }
+  .input {
+    @apply w-full bg-bg-soft border border-bg-ring rounded-xl px-3 py-2 text-sm
+           text-zinc-100 placeholder-zinc-500 outline-none focus:border-brand-400;
+  }
+  .pill {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+  .pill-amber { @apply pill bg-amber-500/15 text-amber-300 border border-amber-500/30; }
+  .pill-violet { @apply pill bg-violet-500/15 text-violet-300 border border-violet-500/30; }
+  .pill-emerald { @apply pill bg-emerald-500/15 text-emerald-300 border border-emerald-500/30; }
+  .pill-sky { @apply pill bg-sky-500/15 text-sky-300 border border-sky-500/30; }
+  .pill-rose { @apply pill bg-rose-500/15 text-rose-300 border border-rose-500/30; }
+  .pill-zinc { @apply pill bg-zinc-500/15 text-zinc-300 border border-zinc-500/30; }
+}
+
+/* Bordure d'avatar arc-en-ciel pour le grade Legende */
+.rank-rainbow {
+  position: relative;
+}
+.rank-rainbow::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  padding: 3px;
+  background: conic-gradient(from 0deg,
+    #ef4444, #f97316, #eab308, #22c55e, #06b6d4, #6366f1, #a855f7, #ef4444);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rainbow-spin 4s linear infinite;
+}
+@keyframes rainbow-spin {
+  to { transform: rotate(360deg); }
+}
+
+.rank-text-rainbow {
+  background: linear-gradient(90deg, #ef4444, #eab308, #22c55e, #06b6d4, #a855f7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 700;
+}
+
+/* Barre de progression avec gradient */
+.bar {
+  @apply h-2 w-full rounded-full overflow-hidden bg-bg-ring;
+}
+.bar > span {
+  @apply block h-full rounded-full;
+  background: linear-gradient(90deg, #6b6ee8, #a78bfa);
+  transition: width .4s ease;
+}
+.bar.bar-emerald > span { background: linear-gradient(90deg, #10b981, #34d399); }
+.bar.bar-rose > span { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+.bar.bar-amber > span { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.bar.bar-violet > span { background: linear-gradient(90deg, #8b5cf6, #c4b5fd); }
+.bar.bar-sky > span { background: linear-gradient(90deg, #0ea5e9, #7dd3fc); }
+.bar.bar-lime > span { background: linear-gradient(90deg, #65a30d, #bef264); }
+
+/* styles markdown maison (cours) */
+.markdown h1 { @apply text-2xl font-bold mt-2 mb-3; }
+.markdown h2 { @apply text-xl font-semibold mt-4 mb-2; }
+.markdown h3 { @apply text-lg font-semibold mt-3 mb-2; }
+.markdown p { @apply text-zinc-200; }
+.markdown ul { @apply list-disc pl-5 space-y-1; }
+.markdown ol { @apply list-decimal pl-5 space-y-1; }
+.markdown code { @apply bg-bg-soft px-1.5 py-0.5 rounded text-amber-300 text-sm; }
+.markdown pre { @apply bg-bg-soft border border-bg-ring rounded-xl p-3 overflow-x-auto text-sm; }
+.markdown a { @apply text-brand-300 hover:underline; }
+.markdown blockquote { @apply border-l-2 border-bg-ring pl-3 text-zinc-400 italic; }
+.markdown table { @apply w-full text-sm; }
+.markdown th, .markdown td { @apply border border-bg-ring px-2 py-1; }

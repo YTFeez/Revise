@@ -1,0 +1,26 @@
+name: Deploy Revise+
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "revise-plus/**"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            cd /opt/revise-plus/src
+            git pull --ff-only
+            cd revise-plus
+            bash infra/deploy.sh

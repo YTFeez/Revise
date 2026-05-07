@@ -1,0 +1,24 @@
+{
+  "name": "revise-plus",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plateforme de revision pour le college (cours, quiz, evaluations) avec gamification XP/niveaux/cosmetiques.",
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "dev:web": "pnpm --filter @revise-plus/web dev",
+    "dev:api": "pnpm --filter @revise-plus/api dev",
+    "build": "pnpm -r build",
+    "build:web": "pnpm --filter @revise-plus/web build",
+    "build:api": "pnpm --filter @revise-plus/api build",
+    "start:api": "pnpm --filter @revise-plus/api start",
+    "db:generate": "pnpm --filter @revise-plus/api db:generate",
+    "db:migrate": "pnpm --filter @revise-plus/api db:migrate",
+    "db:seed": "pnpm --filter @revise-plus/api db:seed",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
