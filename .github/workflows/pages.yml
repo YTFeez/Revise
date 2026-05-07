@@ -4,11 +4,11 @@ on:
   push:
     branches: [main]
     paths:
-      - "revise-plus/apps/web/**"
-      - "revise-plus/packages/shared/**"
-      - "revise-plus/pnpm-workspace.yaml"
-      - "revise-plus/package.json"
-      - "revise-plus/apps/web/vite.config.ts"
+      - "apps/web/**"
+      - "packages/shared/**"
+      - "pnpm-workspace.yaml"
+      - "package.json"
+      - "apps/web/vite.config.ts"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -35,11 +35,9 @@ jobs:
           cache: "pnpm"
 
       - name: Install deps
-        working-directory: revise-plus
         run: pnpm install --frozen-lockfile=false
 
       - name: Build web
-        working-directory: revise-plus
         env:
           VITE_API_BASE: ${{ vars.VITE_API_BASE }}
         run: pnpm --filter @revise-plus/web build
@@ -47,7 +45,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: revise-plus/apps/web/dist
+          path: apps/web/dist
 
   deploy:
     environment:
