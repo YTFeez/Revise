@@ -7,10 +7,17 @@ SRC_DIR="${SRC_DIR:-${APP_DIR}/src}"
 ENV_FILE="${ENV_FILE:-${APP_DIR}/.env.api}"
 
 echo "==> git pull"
-cd "${SRC_DIR}"
-git pull --ff-only
+if [ -d "${SRC_DIR}/.git" ]; then
+  cd "${SRC_DIR}"
+elif [ -d "${SRC_DIR}/revise-plus/.git" ]; then
+  cd "${SRC_DIR}/revise-plus"
+else
+  echo "ERREUR: repo git introuvable dans ${SRC_DIR} ou ${SRC_DIR}/revise-plus" >&2
+  exit 1
+fi
+git pull --ff-only || true
 
-cd "${SRC_DIR}/revise-plus"
+REPO_DIR="$(pwd)"
 
 echo "==> Install"
 pnpm install --frozen-lockfile=false
@@ -31,7 +38,7 @@ rsync -a --delete apps/web/dist/ "${APP_DIR}/web-dist/"
 
 echo "==> (Re)demarrage de l'API avec PM2"
 cd apps/api
-pm2 startOrReload "${SRC_DIR}/revise-plus/infra/ecosystem.config.cjs" --update-env
+pm2 startOrReload "${REPO_DIR}/infra/ecosystem.config.cjs" --update-env
 pm2 save
 
 echo "==> reload nginx"
