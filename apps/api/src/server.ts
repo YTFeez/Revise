@@ -13,6 +13,8 @@ import { leaderboardRoutes } from "./routes/leaderboard.js";
 import { shopRoutes } from "./routes/shop.js";
 import { adminRoutes } from "./routes/admin.js";
 import { attachSocket } from "./realtime/socket.js";
+import { friendsRoutes } from "./routes/friends.js";
+import { shopRotationRoutes } from "./routes/shop_rotation.js";
 
 async function build() {
   const app = Fastify({
@@ -40,6 +42,8 @@ async function build() {
       await api.register(quizzesRoutes);
       await api.register(leaderboardRoutes);
       await api.register(shopRoutes);
+      await api.register(shopRotationRoutes);
+      await api.register(friendsRoutes);
       await api.register(adminRoutes);
     },
     { prefix: "/api" },

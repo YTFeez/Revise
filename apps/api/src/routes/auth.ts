@@ -4,6 +4,7 @@ import { LoginSchema, RegisterSchema } from "@revise-plus/shared";
 import { prisma } from "../prisma.js";
 import { COOKIE_NAME, clearAuthCookie, requireAuth, setAuthCookie } from "../auth.js";
 import { toPublicUser } from "../lib/publicUser.js";
+import { auditLog } from "../lib/audit.js";
 
 const gradeIn: Record<string, "SIXIEME" | "CINQUIEME" | "QUATRIEME" | "TROISIEME"> = {
   "6e": "SIXIEME",
@@ -35,6 +36,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
 
     const token = app.jwt.sign({ sub: user.id, isAdmin: user.isAdmin });
     setAuthCookie(reply, token);
+    await auditLog({ request, userId: user.id, action: "REGISTER", meta: { email: user.email } });
     return reply.send({ user: toPublicUser(user), token });
   });
 
@@ -49,6 +51,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
 
     const token = app.jwt.sign({ sub: user.id, isAdmin: user.isAdmin });
     setAuthCookie(reply, token);
+    await auditLog({ request, userId: user.id, action: "LOGIN" });
     return reply.send({ user: toPublicUser(user), token });
   });
 

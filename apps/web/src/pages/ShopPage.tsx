@@ -16,6 +16,20 @@ interface Cosmetic {
   owned: boolean;
 }
 
+interface Rotation {
+  id: string;
+  startsAt: string;
+  endsAt: string;
+  listings: Array<{
+    id: string;
+    priceCoins: number;
+    featured: boolean;
+    stock: number | null;
+    sold: number;
+    cosmetic: Cosmetic;
+  }>;
+}
+
 const rarityClass: Record<string, string> = {
   common: "border-zinc-500/30 bg-zinc-500/10",
   rare: "border-sky-400/40 bg-sky-500/10",
@@ -26,11 +40,13 @@ const rarityClass: Record<string, string> = {
 export default function ShopPage() {
   const { user, setUser } = useAuth();
   const [items, setItems] = useState<Cosmetic[]>([]);
+  const [rotation, setRotation] = useState<Rotation | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   function refresh() {
     api<Cosmetic[]>("/cosmetics").then(setItems).catch(() => undefined);
+    api<{ rotation: Rotation | null }>("/shop/rotation").then((d) => setRotation(d.rotation)).catch(() => undefined);
   }
   useEffect(() => { refresh(); }, []);
 
@@ -41,6 +57,23 @@ export default function ShopPage() {
       const data = await api<{ user: PublicUser }>("/cosmetics/purchase", {
         method: "POST",
         body: JSON.stringify({ cosmeticSlug: slug }),
+      });
+      setUser(data.user);
+      refresh();
+    } catch (e: any) {
+      setError(e?.message || "Achat impossible");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function buyListing(listingId: string) {
+    setBusy(listingId);
+    setError(null);
+    try {
+      const data = await api<{ user: PublicUser }>("/shop/buy", {
+        method: "POST",
+        body: JSON.stringify({ listingId }),
       });
       setUser(data.user);
       refresh();
@@ -68,6 +101,50 @@ export default function ShopPage() {
         {user && <div className="pill-violet">{user.coins} coins</div>}
       </div>
       {error && <div className="text-rose-400 text-sm mb-3">{error}</div>}
+
+      {rotation && (
+        <section className="card p-5 mb-8">
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <div>
+              <h3 className="text-sm font-semibold text-zinc-300">Rotation du jour</h3>
+              <p className="text-xs text-zinc-500">Offres speciales, mise a jour chaque jour.</p>
+            </div>
+            <span className="pill-amber">Nouveaute</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {rotation.listings.map((l) => {
+              const it = l.cosmetic;
+              const locked = !!user && user.level < it.requiredLevel;
+              const out = l.stock !== null && l.sold >= l.stock;
+              return (
+                <div key={l.id} className={`rounded-2xl border p-4 ${rarityClass[it.rarity] || rarityClass.common}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="font-semibold">{it.name}</div>
+                    <span className="pill-violet text-[10px] uppercase">{it.type}</span>
+                  </div>
+                  {it.description && <p className="text-xs text-zinc-400 mt-1">{it.description}</p>}
+                  <div className="flex items-center justify-between mt-3">
+                    <div className="text-xs text-zinc-400">Niv. {it.requiredLevel}</div>
+                    <div className="text-amber-300 font-semibold">{l.priceCoins} coins</div>
+                  </div>
+                  {l.stock !== null && (
+                    <div className="text-[11px] text-zinc-500 mt-1">Stock: {Math.max(0, l.stock - l.sold)} restant</div>
+                  )}
+                  <div className="mt-3">
+                    <button
+                      className="btn-primary w-full"
+                      disabled={!user || locked || out || busy === l.id || (user.coins < l.priceCoins)}
+                      onClick={() => buyListing(l.id)}
+                    >
+                      {out ? "Epuise" : locked ? `Niv. ${it.requiredLevel} requis` : busy === l.id ? "..." : "Acheter (rotation)"}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {([
         ["BORDER", "Cadres d'avatar"],

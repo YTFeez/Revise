@@ -36,6 +36,28 @@ export const shopRoutes: FastifyPluginAsync = async (app) => {
     }));
   });
 
+  // historique d'achats
+  app.get("/me/purchases", { preHandler: requireAuth }, async (request) => {
+    const userId = request.userId!;
+    const purchases = await prisma.purchase.findMany({
+      where: { userId },
+      include: { cosmetic: true },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    });
+    return purchases.map((p) => ({
+      id: p.id,
+      createdAt: p.createdAt,
+      priceCoins: p.priceCoins,
+      cosmetic: {
+        slug: p.cosmetic.slug,
+        name: p.cosmetic.name,
+        type: p.cosmetic.type,
+        rarity: p.cosmetic.rarity,
+      },
+    }));
+  });
+
   // mes cosmetiques
   app.get("/me/cosmetics", { preHandler: requireAuth }, async (request) => {
     const list = await prisma.userCosmetic.findMany({

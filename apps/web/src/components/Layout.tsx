@@ -11,6 +11,7 @@ const navItems = [
   { to: "/quiz", label: "Quiz" },
   { to: "/eval", label: "Eval" },
   { to: "/classement", label: "Classement" },
+  { to: "/amis", label: "Amis" },
   { to: "/boutique", label: "Boutique" },
 ];
 

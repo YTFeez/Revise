@@ -2,6 +2,7 @@ import type { FastifyPluginAsync } from "fastify";
 import { CreateCourseSchema, CreateQuizSchema } from "@revise-plus/shared";
 import { prisma } from "../prisma.js";
 import { requireAdmin } from "../auth.js";
+import { z } from "zod";
 
 function slugify(s: string) {
   return s
@@ -114,6 +115,167 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
       },
     });
     return reply.send({ quiz });
+  });
+
+  // Import pack JSON (matieres/cours/quiz/cosmetics/rotation)
+  const PackSchema = z.object({
+    subjects: z.array(z.object({ slug: z.string(), name: z.string(), icon: z.string().optional(), color: z.string().optional(), gradeLevel: z.string().optional(), order: z.number().optional() })).optional(),
+    courses: z.array(z.object({
+      subjectSlug: z.string(),
+      title: z.string(),
+      slug: z.string().optional(),
+      contentHtml: z.string().optional(),
+      contentMarkdown: z.string().optional(),
+      contentFormat: z.enum(["HTML", "MARKDOWN"]).optional(),
+      order: z.number().optional(),
+    })).optional(),
+    quizzes: z.array(z.object({
+      courseSlug: z.string(),
+      subjectSlug: z.string(),
+      title: z.string(),
+      type: z.enum(["QUIZ", "EVAL"]).optional(),
+      timeLimitSec: z.number().optional(),
+      difficulty: z.number().optional(),
+      questions: z.array(z.object({
+        text: z.string(),
+        type: z.enum(["QCM", "VRAI_FAUX", "TEXTE"]).optional(),
+        points: z.number().optional(),
+        answers: z.array(z.object({ text: z.string(), isCorrect: z.boolean() })).min(2),
+      })).min(1),
+    })).optional(),
+    cosmetics: z.array(z.object({
+      slug: z.string(),
+      name: z.string(),
+      type: z.enum(["BORDER", "HAT", "BG", "BADGE"]),
+      description: z.string().optional(),
+      priceCoins: z.number().optional(),
+      requiredLevel: z.number().optional(),
+      borderClass: z.string().optional(),
+      rarity: z.string().optional(),
+    })).optional(),
+    rotation: z.object({
+      startsAt: z.string().optional(), // ISO
+      endsAt: z.string().optional(),
+      listings: z.array(z.object({
+        cosmeticSlug: z.string(),
+        priceCoins: z.number(),
+        featured: z.boolean().optional(),
+        stock: z.number().nullable().optional(),
+      })).min(1),
+    }).optional(),
+  });
+
+  app.post("/admin/packs/import", async (request, reply) => {
+    const parsed = PackSchema.safeParse(request.body);
+    if (!parsed.success) return reply.code(400).send({ error: "Pack invalide", issues: parsed.error.issues });
+    const pack = parsed.data;
+
+    const result: Record<string, number> = { subjects: 0, courses: 0, quizzes: 0, cosmetics: 0, listings: 0 };
+
+    // subjects
+    if (pack.subjects?.length) {
+      for (const s of pack.subjects) {
+        await prisma.subject.upsert({
+          where: { slug: s.slug },
+          update: { name: s.name, icon: s.icon, color: s.color, order: s.order ?? 0 },
+          create: { slug: s.slug, name: s.name, icon: s.icon, color: s.color, order: s.order ?? 0, gradeLevel: (s.gradeLevel as any) ?? "TROISIEME" } as any,
+        });
+        result.subjects++;
+      }
+    }
+
+    // courses
+    if (pack.courses?.length) {
+      for (const c of pack.courses) {
+        const subject = await prisma.subject.findUnique({ where: { slug: c.subjectSlug } });
+        if (!subject) continue;
+        const slug = c.slug ?? slugify(c.title);
+        await prisma.course.upsert({
+          where: { subjectId_slug: { subjectId: subject.id, slug } },
+          update: {
+            title: c.title,
+            contentHtml: c.contentHtml,
+            contentMarkdown: c.contentMarkdown ?? "",
+            contentFormat: c.contentFormat ?? "HTML",
+            order: c.order ?? 0,
+          } as any,
+          create: {
+            subjectId: subject.id,
+            title: c.title,
+            slug,
+            contentHtml: c.contentHtml,
+            contentMarkdown: c.contentMarkdown ?? "",
+            contentFormat: c.contentFormat ?? "HTML",
+            order: c.order ?? 0,
+          } as any,
+        });
+        result.courses++;
+      }
+    }
+
+    // cosmetics
+    if (pack.cosmetics?.length) {
+      for (const c of pack.cosmetics) {
+        await prisma.cosmetic.upsert({
+          where: { slug: c.slug },
+          update: { ...c } as any,
+          create: { ...c } as any,
+        });
+        result.cosmetics++;
+      }
+    }
+
+    // quizzes
+    if (pack.quizzes?.length) {
+      for (const q of pack.quizzes) {
+        const subject = await prisma.subject.findUnique({ where: { slug: q.subjectSlug } });
+        if (!subject) continue;
+        const course = await prisma.course.findUnique({ where: { subjectId_slug: { subjectId: subject.id, slug: q.courseSlug } } });
+        if (!course) continue;
+        await prisma.quiz.create({
+          data: {
+            courseId: course.id,
+            title: q.title,
+            type: (q.type ?? "QUIZ") as any,
+            timeLimitSec: q.timeLimitSec ?? 300,
+            difficulty: q.difficulty ?? 1,
+            questions: {
+              create: q.questions.map((qq, i) => ({
+                text: qq.text,
+                type: (qq.type ?? "QCM") as any,
+                points: qq.points ?? 1,
+                order: i + 1,
+                answers: { create: qq.answers.map((a, j) => ({ text: a.text, isCorrect: a.isCorrect, order: j + 1 })) },
+              })),
+            },
+          },
+        }).catch(() => undefined);
+        result.quizzes++;
+      }
+    }
+
+    // rotation (optionnelle)
+    if (pack.rotation) {
+      const startsAt = pack.rotation.startsAt ? new Date(pack.rotation.startsAt) : new Date(new Date().setHours(0, 0, 0, 0));
+      const endsAt = pack.rotation.endsAt ? new Date(pack.rotation.endsAt) : new Date(startsAt.getTime() + 24 * 60 * 60 * 1000);
+      const rotation = await prisma.shopRotation.create({ data: { startsAt, endsAt } });
+      for (const l of pack.rotation.listings) {
+        const cosmetic = await prisma.cosmetic.findUnique({ where: { slug: l.cosmeticSlug } });
+        if (!cosmetic) continue;
+        await prisma.shopListing.create({
+          data: {
+            rotationId: rotation.id,
+            cosmeticId: cosmetic.id,
+            priceCoins: l.priceCoins,
+            featured: l.featured ?? false,
+            stock: l.stock ?? null,
+          },
+        });
+        result.listings++;
+      }
+    }
+
+    return reply.send({ ok: true, result });
   });
 
   app.delete<{ Params: { id: string } }>("/admin/courses/:id", async (request) => {

@@ -48,6 +48,29 @@ async function main() {
     });
   }
 
+  // ---- Rotation boutique (journee) ----
+  const now = new Date();
+  const start = new Date(now);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 1);
+
+  const rotation = await prisma.shopRotation.upsert({
+    where: { startsAt_endsAt: { startsAt: start, endsAt: end } } as any,
+    update: {},
+    create: { startsAt: start, endsAt: end },
+  });
+
+  const featuredSlugs = ["border-violet", "hat-graduate", "bg-stars"] as const;
+  const featured = await prisma.cosmetic.findMany({ where: { slug: { in: featuredSlugs as any } } });
+  for (const c of featured) {
+    await prisma.shopListing.upsert({
+      where: { rotationId_cosmeticId: { rotationId: rotation.id, cosmeticId: c.id } },
+      update: { priceCoins: Math.max(1, c.priceCoins - 20), featured: true, stock: null },
+      create: { rotationId: rotation.id, cosmeticId: c.id, priceCoins: Math.max(1, c.priceCoins - 20), featured: true, stock: null },
+    });
+  }
+
   // ---- Cours de demo ----
   const maths = await prisma.subject.findUnique({ where: { slug: "maths" } });
   if (maths) {

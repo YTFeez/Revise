@@ -12,6 +12,7 @@ import LeaderboardPage from "./pages/LeaderboardPage";
 import ShopPage from "./pages/ShopPage";
 import AvatarPage from "./pages/AvatarPage";
 import AdminPage from "./pages/AdminPage";
+import FriendsPage from "./pages/FriendsPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 export default function App() {
@@ -35,6 +36,14 @@ export default function App() {
           }
         />
         <Route path="classement" element={<LeaderboardPage />} />
+        <Route
+          path="amis"
+          element={
+            <ProtectedRoute>
+              <FriendsPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="boutique" element={<ShopPage />} />
         <Route
           path="avatar"
