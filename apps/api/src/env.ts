@@ -8,6 +8,7 @@ const EnvSchema = z.object({
   JWT_SECRET: z.string().min(16),
   COOKIE_SECRET: z.string().min(16),
   WEB_ORIGIN: z.string().default("http://localhost:5173"),
+  ADMIN_CODE: z.string().min(8).optional(),
 });
 
 export const env = EnvSchema.parse(process.env);

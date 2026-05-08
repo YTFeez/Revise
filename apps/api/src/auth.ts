@@ -1,5 +1,6 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { prisma } from "./prisma.js";
+import { env } from "./env.js";
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -50,6 +51,12 @@ export async function requireAdmin(request: FastifyRequest, reply: FastifyReply)
   if (reply.sent) return;
   if (!request.isAdmin) {
     return reply.code(403).send({ error: "Reserve aux administrateurs" });
+  }
+  if (env.ADMIN_CODE) {
+    const code = request.headers["x-admin-code"];
+    if (typeof code !== "string" || code !== env.ADMIN_CODE) {
+      return reply.code(403).send({ error: "Code admin requis" });
+    }
   }
 }
 

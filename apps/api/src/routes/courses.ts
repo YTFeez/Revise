@@ -49,6 +49,8 @@ export const coursesRoutes: FastifyPluginAsync = async (app) => {
           slug: course.slug,
           title: course.title,
           contentMarkdown: course.contentMarkdown,
+          contentHtml: course.contentHtml,
+          contentFormat: course.contentFormat,
         },
         subject: { id: subject.id, slug: subject.slug, name: subject.name },
         quizzes: course.quizzes.map((q) => ({

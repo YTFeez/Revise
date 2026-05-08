@@ -35,11 +35,54 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
         subjectId: parsed.data.subjectId,
         title: parsed.data.title,
         slug,
-        contentMarkdown: parsed.data.contentMarkdown,
+        contentMarkdown: parsed.data.contentMarkdown ?? "",
+        contentHtml: parsed.data.contentHtml ?? "",
+        contentFormat: parsed.data.contentFormat ?? "HTML",
         order: parsed.data.order,
       },
     });
     return reply.send({ course });
+  });
+
+  app.put<{ Params: { id: string } }>("/admin/courses/:id", async (request, reply) => {
+    const parsed = CreateCourseSchema.partial({ subjectId: true }).safeParse(request.body);
+    if (!parsed.success) return reply.code(400).send({ error: "Donnees invalides", issues: parsed.error.issues });
+    const data = parsed.data;
+    const updated = await prisma.course.update({
+      where: { id: request.params.id },
+      data: {
+        title: data.title,
+        slug: data.title ? slugify(data.title) : undefined,
+        contentMarkdown: data.contentMarkdown,
+        contentHtml: data.contentHtml,
+        contentFormat: data.contentFormat,
+        order: typeof data.order === "number" ? data.order : undefined,
+      },
+    });
+    return reply.send({ course: updated });
+  });
+
+  app.get("/admin/courses", async () => {
+    const courses = await prisma.course.findMany({
+      orderBy: [{ updatedAt: "desc" }],
+      include: { subject: true, quizzes: { select: { id: true } } },
+      take: 200,
+    });
+    return courses.map((c) => ({
+      id: c.id,
+      title: c.title,
+      slug: c.slug,
+      subject: { id: c.subject.id, name: c.subject.name, slug: c.subject.slug },
+      quizCount: c.quizzes.length,
+      updatedAt: c.updatedAt,
+      contentFormat: c.contentFormat,
+    }));
+  });
+
+  app.get<{ Params: { id: string } }>("/admin/courses/:id", async (request, reply) => {
+    const course = await prisma.course.findUnique({ where: { id: request.params.id } });
+    if (!course) return reply.code(404).send({ error: "Cours introuvable" });
+    return { course };
   });
 
   app.post("/admin/quizzes", async (request, reply) => {

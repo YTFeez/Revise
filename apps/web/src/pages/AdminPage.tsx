@@ -1,5 +1,7 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { api } from "../lib/api";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 
 interface Subject { id: string; slug: string; name: string }
 interface Course { id: string; slug: string; title: string }
@@ -13,8 +15,20 @@ export default function AdminPage() {
   // course form
   const [subjectId, setSubjectId] = useState("");
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("# Mon cours\n\nLe contenu en markdown...");
+  const [adminCode, setAdminCode] = useState(() => localStorage.getItem("rp_admin_code") || "");
   const [courseId, setCourseId] = useState<string | null>(null);
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: "<h1>Mon cours</h1><p>Le contenu ici...</p>",
+    editorProps: {
+      attributes: {
+        class:
+          "min-h-[220px] rounded-xl border border-bg-ring bg-bg-soft p-3 focus:outline-none",
+      },
+    },
+  });
+
+  const htmlContent = useMemo(() => editor?.getHTML() ?? "", [editor, editor?.state]);
 
   // quiz form
   const [quizTitle, setQuizTitle] = useState("");
@@ -31,11 +45,12 @@ export default function AdminPage() {
   ]);
 
   useEffect(() => {
+    if (adminCode) localStorage.setItem("rp_admin_code", adminCode);
     api<{ users: number; courses: number; quizzes: number; attempts: number }>("/admin/overview")
       .then(setOverview)
       .catch((e) => setError(e?.message || "Acces refuse"));
     api<Subject[]>("/subjects").then(setSubjects);
-  }, []);
+  }, [adminCode]);
 
   async function createCourse(e: FormEvent) {
     e.preventDefault();
@@ -43,7 +58,7 @@ export default function AdminPage() {
     try {
       const res = await api<{ course: Course }>("/admin/courses", {
         method: "POST",
-        body: JSON.stringify({ subjectId, title, contentMarkdown: content, order: 0 }),
+        body: JSON.stringify({ subjectId, title, contentHtml: htmlContent, contentFormat: "HTML", order: 0 }),
       });
       setMsg(`Cours cree : ${res.course.title}`);
       setCourseId(res.course.id);
@@ -77,6 +92,12 @@ export default function AdminPage() {
       <h1 className="text-2xl font-bold mb-1">Admin Revise+</h1>
       <p className="text-sm text-zinc-400 mb-5">Cree des cours et des quiz.</p>
 
+      <div className="card p-4 mb-4">
+        <div className="text-xs text-zinc-400 mb-1">Code admin (obligatoire)</div>
+        <input className="input" value={adminCode} onChange={(e) => setAdminCode(e.target.value)} placeholder="Entre ton code admin..." />
+        <div className="text-[11px] text-zinc-500 mt-1">Ce code est stocke localement sur ton navigateur.</div>
+      </div>
+
       {error && <div className="card p-3 text-rose-300 mb-3">{error}</div>}
       {msg && <div className="card p-3 text-emerald-300 mb-3">{msg}</div>}
 
@@ -99,7 +120,21 @@ export default function AdminPage() {
             ))}
           </select>
           <input className="input" placeholder="Titre" value={title} onChange={(e) => setTitle(e.target.value)} required />
-          <textarea className="input min-h-[200px] font-mono" placeholder="Contenu en markdown" value={content} onChange={(e) => setContent(e.target.value)} required />
+          <div>
+            <div className="text-xs text-zinc-400 mb-1">Contenu (editeur riche)</div>
+            <div className="rounded-xl border border-bg-ring overflow-hidden">
+              <div className="flex flex-wrap gap-1 p-2 bg-bg-card border-b border-bg-ring">
+                <Btn onClick={() => editor?.chain().focus().toggleBold().run()} active={!!editor?.isActive("bold")}>Gras</Btn>
+                <Btn onClick={() => editor?.chain().focus().toggleItalic().run()} active={!!editor?.isActive("italic")}>Italique</Btn>
+                <Btn onClick={() => editor?.chain().focus().toggleBulletList().run()} active={!!editor?.isActive("bulletList")}>Liste</Btn>
+                <Btn onClick={() => editor?.chain().focus().toggleOrderedList().run()} active={!!editor?.isActive("orderedList")}>1.2.3</Btn>
+                <Btn onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()} active={!!editor?.isActive("heading", { level: 2 })}>Titre</Btn>
+                <Btn onClick={() => editor?.chain().focus().toggleBlockquote().run()} active={!!editor?.isActive("blockquote")}>Citation</Btn>
+                <Btn onClick={() => editor?.chain().focus().setHorizontalRule().run()} active={false}>---</Btn>
+              </div>
+              <EditorContent editor={editor} />
+            </div>
+          </div>
           <button className="btn-primary">Creer le cours</button>
         </form>
         {courseId && <p className="text-xs text-emerald-300 mt-2">Course id pret : {courseId}</p>}
@@ -183,5 +218,17 @@ function Stat({ label, value }: { label: string; value: number }) {
       <div className="text-xs text-zinc-400">{label}</div>
       <div className="text-2xl font-bold text-brand-300">{value}</div>
     </div>
+  );
+}
+
+function Btn({ onClick, active, children }: { onClick: () => void; active: boolean; children: any }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`px-2 py-1 rounded-lg text-xs border ${active ? "bg-brand-500/20 border-brand-400/40 text-white" : "bg-bg-soft border-bg-ring text-zinc-300"}`}
+    >
+      {children}
+    </button>
   );
 }

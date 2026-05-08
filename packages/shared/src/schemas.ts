@@ -43,7 +43,9 @@ export const EquipCosmeticSchema = z.object({
 export const CreateCourseSchema = z.object({
   subjectId: z.string(),
   title: z.string().min(2).max(120),
-  contentMarkdown: z.string(),
+  contentMarkdown: z.string().optional().default(""),
+  contentHtml: z.string().optional().default(""),
+  contentFormat: z.enum(["MARKDOWN", "HTML"]).default("HTML"),
   order: z.number().int().min(0).default(0),
 });
 

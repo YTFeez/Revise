@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { api } from "../lib/api";
+import DOMPurify from "dompurify";
 
 interface Quiz {
   id: string;
@@ -17,6 +18,8 @@ interface Course {
   slug: string;
   title: string;
   contentMarkdown: string;
+  contentHtml?: string | null;
+  contentFormat?: "MARKDOWN" | "HTML" | string;
 }
 interface Subject {
   id: string;
@@ -45,7 +48,14 @@ export default function CoursePage() {
       <h1 className="text-2xl font-bold mt-2">{data.course.title}</h1>
 
       <article className="card p-6 mt-4 markdown space-y-3 leading-relaxed text-zinc-200">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{data.course.contentMarkdown}</ReactMarkdown>
+        {data.course.contentFormat === "HTML" && data.course.contentHtml ? (
+          <div
+            className="prose prose-invert max-w-none"
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(data.course.contentHtml) }}
+          />
+        ) : (
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{data.course.contentMarkdown}</ReactMarkdown>
+        )}
       </article>
 
       <h2 className="text-lg font-semibold mt-8 mb-2">Quiz et evaluations</h2>

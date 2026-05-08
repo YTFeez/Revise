@@ -1,5 +1,6 @@
 const API_BASE = (import.meta as any).env?.VITE_API_BASE || "/api";
 const TOKEN_KEY = "rp_token";
+const ADMIN_CODE_KEY = "rp_admin_code";
 
 export class ApiError extends Error {
   status: number;
@@ -13,11 +14,13 @@ export class ApiError extends Error {
 
 export async function api<T = unknown>(path: string, init: RequestInit = {}): Promise<T> {
   const token = localStorage.getItem(TOKEN_KEY);
+  const adminCode = localStorage.getItem(ADMIN_CODE_KEY);
   const res = await fetch(`${API_BASE}${path}`, {
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(adminCode ? { "x-admin-code": adminCode } : {}),
       ...(init.headers || {}),
     },
     ...init,
