@@ -3,6 +3,9 @@ import { CreateCourseSchema, CreateQuizSchema } from "@revise-plus/shared";
 import { prisma } from "../prisma.js";
 import { requireAdmin } from "../auth.js";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
+import { auditLog } from "../lib/audit.js";
+import { MAX_LEVEL, totalXpForLevel } from "@revise-plus/shared";
 
 function slugify(s: string) {
   return s
@@ -25,6 +28,126 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
       prisma.attempt.count(),
     ]);
     return { users, courses, quizzes, attempts };
+  });
+
+  // ---- Users management ----
+  const AdminUsersListQuery = z.object({
+    q: z.string().optional(),
+    take: z.coerce.number().int().min(1).max(200).optional().default(50),
+    skip: z.coerce.number().int().min(0).optional().default(0),
+  });
+
+  app.get("/admin/users", async (request, reply) => {
+    const parsed = AdminUsersListQuery.safeParse(request.query);
+    if (!parsed.success) return reply.code(400).send({ error: "Query invalide" });
+    const { q, take, skip } = parsed.data;
+
+    const where = q
+      ? {
+          OR: [
+            { email: { contains: q, mode: "insensitive" as any } },
+            { username: { contains: q, mode: "insensitive" as any } },
+            { id: { contains: q } },
+          ],
+        }
+      : {};
+
+    const users = await prisma.user.findMany({
+      where: where as any,
+      orderBy: [{ updatedAt: "desc" }],
+      take,
+      skip,
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        isAdmin: true,
+        level: true,
+        totalXp: true,
+        coins: true,
+        streakDays: true,
+        gradeLevel: true,
+        equippedBorder: true,
+        equippedHat: true,
+        equippedBg: true,
+        equippedAppBg: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    return { users };
+  });
+
+  app.get<{ Params: { id: string } }>("/admin/users/:id", async (request, reply) => {
+    const u = await prisma.user.findUnique({
+      where: { id: request.params.id },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        isAdmin: true,
+        level: true,
+        totalXp: true,
+        coins: true,
+        weeklyXp: true,
+        streakDays: true,
+        gradeLevel: true,
+        equippedBorder: true,
+        equippedHat: true,
+        equippedBg: true,
+        equippedAppBg: true,
+        avatarJson: true,
+        createdAt: true,
+        updatedAt: true,
+        purchases: { take: 50, orderBy: { createdAt: "desc" }, include: { cosmetic: true } },
+        devices: { take: 20, orderBy: { lastSeenAt: "desc" } },
+      },
+    });
+    if (!u) return reply.code(404).send({ error: "Utilisateur introuvable" });
+    return { user: u };
+  });
+
+  const AdminUserUpdateSchema = z.object({
+    email: z.string().email().optional(),
+    username: z.string().min(2).max(30).optional(),
+    isAdmin: z.boolean().optional(),
+    level: z.number().int().min(1).max(MAX_LEVEL).optional(),
+    coins: z.number().int().min(0).max(999_999_999).optional(),
+    totalXp: z.number().int().min(0).optional(),
+    equippedBorder: z.string().nullable().optional(),
+    equippedHat: z.string().nullable().optional(),
+    equippedBg: z.string().nullable().optional(),
+    equippedAppBg: z.string().nullable().optional(),
+    avatarJson: z.any().optional(),
+  });
+
+  app.patch<{ Params: { id: string } }>("/admin/users/:id", async (request, reply) => {
+    const parsed = AdminUserUpdateSchema.safeParse(request.body);
+    if (!parsed.success) return reply.code(400).send({ error: "Donnees invalides", issues: parsed.error.issues });
+    const data: any = { ...parsed.data };
+    if (typeof data.level === "number" && typeof data.totalXp !== "number") {
+      data.totalXp = totalXpForLevel(data.level);
+    }
+    const updated = await prisma.user.update({ where: { id: request.params.id }, data });
+    await auditLog({ request, userId: request.userId, action: "ADMIN_ACTION", meta: { kind: "USER_UPDATE", targetUserId: request.params.id, patch: Object.keys(parsed.data) } });
+    return reply.send({ ok: true, userId: updated.id });
+  });
+
+  const AdminResetPwdSchema = z.object({ newPassword: z.string().min(6).max(200) });
+  app.post<{ Params: { id: string } }>("/admin/users/:id/reset-password", async (request, reply) => {
+    const parsed = AdminResetPwdSchema.safeParse(request.body);
+    if (!parsed.success) return reply.code(400).send({ error: "Mot de passe invalide" });
+    const hash = await bcrypt.hash(parsed.data.newPassword, 10);
+    await prisma.user.update({ where: { id: request.params.id }, data: { passwordHash: hash } });
+    await auditLog({ request, userId: request.userId, action: "ADMIN_ACTION", meta: { kind: "USER_RESET_PASSWORD", targetUserId: request.params.id } });
+    return reply.send({ ok: true });
+  });
+
+  app.delete<{ Params: { id: string } }>("/admin/users/:id", async (request, reply) => {
+    if (request.params.id === request.userId) return reply.code(400).send({ error: "Impossible de supprimer ton propre compte" });
+    await prisma.user.delete({ where: { id: request.params.id } });
+    await auditLog({ request, userId: request.userId, action: "ADMIN_ACTION", meta: { kind: "USER_DELETE", targetUserId: request.params.id } });
+    return reply.send({ ok: true });
   });
 
   app.post("/admin/courses", async (request, reply) => {
@@ -146,7 +269,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     cosmetics: z.array(z.object({
       slug: z.string(),
       name: z.string(),
-      type: z.enum(["BORDER", "HAT", "BG", "BADGE"]),
+      type: z.enum(["BORDER", "HAT", "BG", "APP_BG", "BADGE"]),
       description: z.string().optional(),
       priceCoins: z.number().optional(),
       requiredLevel: z.number().optional(),
