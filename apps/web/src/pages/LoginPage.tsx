@@ -7,6 +7,7 @@ export default function LoginPage() {
   const { login, loading, error } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -27,7 +28,23 @@ export default function LoginPage() {
         </label>
         <label className="block">
           <span className="text-xs text-zinc-400">Mot de passe</span>
-          <input className="input mt-1" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          <div className="mt-1 relative">
+            <input
+              className="input pr-20"
+              type={showPassword ? "text" : "password"}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+            />
+            <button
+              type="button"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded-lg border border-bg-ring bg-bg-card text-zinc-300 hover:bg-bg-soft"
+              onClick={() => setShowPassword((v) => !v)}
+            >
+              {showPassword ? "Masquer" : "Afficher"}
+            </button>
+          </div>
         </label>
         {error && <p className="text-rose-400 text-sm">{error}</p>}
         <button className="btn-primary w-full" disabled={loading}>

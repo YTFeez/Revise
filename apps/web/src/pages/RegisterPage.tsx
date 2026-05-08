@@ -9,6 +9,7 @@ export default function RegisterPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [gradeLevel, setGradeLevel] = useState("3e");
+  const [showPassword, setShowPassword] = useState(false);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -33,7 +34,24 @@ export default function RegisterPage() {
         </label>
         <label className="block">
           <span className="text-xs text-zinc-400">Mot de passe</span>
-          <input className="input mt-1" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+          <div className="mt-1 relative">
+            <input
+              className="input pr-20"
+              type={showPassword ? "text" : "password"}
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+            />
+            <button
+              type="button"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded-lg border border-bg-ring bg-bg-card text-zinc-300 hover:bg-bg-soft"
+              onClick={() => setShowPassword((v) => !v)}
+            >
+              {showPassword ? "Masquer" : "Afficher"}
+            </button>
+          </div>
         </label>
         <label className="block">
           <span className="text-xs text-zinc-400">Classe</span>
