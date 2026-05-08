@@ -24,6 +24,17 @@ export default function AvatarPage() {
 
   if (!user) return null;
   const rank = rankForLevel(user.level);
+  const bannerClass =
+    user.level >= 1000 ? "banner-legendaire" :
+    user.level >= 901 ? "banner-genie" :
+    user.level >= 801 ? "banner-savant" :
+    user.level >= 701 ? "banner-maitre" :
+    user.level >= 551 ? "banner-expert" :
+    user.level >= 451 ? "banner-chercheur" :
+    user.level >= 301 ? "banner-curieux" :
+    user.level >= 151 ? "banner-eleve" :
+    user.level >= 51 ? "banner-apprenti" :
+    "banner-recrue";
 
   const borders = owned.filter((o) => o.cosmetic.type === "BORDER");
 
@@ -60,7 +71,8 @@ export default function AvatarPage() {
       <h1 className="text-2xl font-bold mb-1">Choisis ton personnage</h1>
       <p className="text-sm text-zinc-400 mb-5">Ton cadre evolue avec ton niveau, et tu peux en acheter de speciaux dans la boutique.</p>
 
-      <div className="card p-6 flex flex-col items-center gap-3">
+      <div className={`card p-6 flex flex-col items-center gap-3 relative overflow-hidden banner-bg ${bannerClass}`}>
+        <div className="absolute inset-0 bg-black/10 pointer-events-none" />
         <AvatarBorder
           level={user.level}
           username={user.username}

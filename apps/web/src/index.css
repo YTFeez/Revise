@@ -72,6 +72,71 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* --- Cercles de rang "premium" (inspirés de ta maquette) --- */
+.rank-circle {
+  position: relative;
+}
+.rank-circle::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  padding: 3px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,.18), transparent 55%),
+    conic-gradient(from 0deg,
+      rgba(255,255,255,.0) 0 10deg,
+      rgba(255,255,255,.18) 10deg 12deg,
+      rgba(255,255,255,.0) 12deg 40deg,
+      rgba(255,255,255,.18) 40deg 42deg,
+      rgba(255,255,255,.0) 42deg 70deg,
+      rgba(255,255,255,.18) 70deg 72deg,
+      rgba(255,255,255,.0) 72deg 100deg,
+      rgba(255,255,255,.18) 100deg 102deg,
+      rgba(255,255,255,.0) 102deg 360deg),
+    var(--rank-main, #999);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  box-shadow: 0 0 0 2px rgba(0,0,0,.35), 0 0 18px rgba(0,0,0,.25);
+}
+.rank-circle::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 9999px;
+  border: 2px solid rgba(255,255,255,.14);
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,.20);
+}
+
+.rank-circle-gray { --rank-main: linear-gradient(180deg, rgba(230,230,230,.95), rgba(190,190,190,.65)); }
+.rank-circle-blue { --rank-main: linear-gradient(180deg, rgba(147,197,253,.95), rgba(59,130,246,.55)); }
+.rank-circle-green { --rank-main: linear-gradient(180deg, rgba(187,247,208,.95), rgba(34,197,94,.55)); }
+.rank-circle-violet { --rank-main: linear-gradient(180deg, rgba(216,180,254,.95), rgba(168,85,247,.55)); }
+.rank-circle-amber { --rank-main: linear-gradient(180deg, rgba(253,230,138,.95), rgba(245,158,11,.55)); }
+.rank-circle-orange { --rank-main: linear-gradient(180deg, rgba(253,186,116,.95), rgba(249,115,22,.55)); }
+.rank-circle-indigo { --rank-main: linear-gradient(180deg, rgba(199,210,254,.95), rgba(99,102,241,.55)); }
+.rank-circle-teal { --rank-main: linear-gradient(180deg, rgba(153,246,228,.95), rgba(20,184,166,.55)); }
+.rank-circle-red { --rank-main: linear-gradient(180deg, rgba(254,202,202,.95), rgba(239,68,68,.55)); }
+
+.rank-circle-star::marker { content: ""; }
+.rank-circle-star > span { display: none; } /* noop: just to avoid unused selectors */
+
+.rank-circle-topstar {
+  position: relative;
+}
+.rank-circle-topstar .rank-star {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 18px;
+  color: rgba(255,255,255,.9);
+  filter: drop-shadow(0 0 10px rgba(0,0,0,.35));
+}
+
 /* ---- Cosmetiques "premium" (cadres/fonds) ---- */
 .cos-border-neon-cyan { position: relative; }
 .cos-border-neon-cyan::before {
@@ -141,6 +206,151 @@ body.theme-obsidian {
   background: radial-gradient(circle at 25% 20%, rgba(255,255,255,.06), transparent 55%),
               linear-gradient(180deg, rgba(10,10,12,1), rgba(15,16,24,1));
 }
+
+/* Fonds de bannière par rang (reprend le style de banner_backgrounds_ranks.html) */
+.banner-bg {
+  position: relative;
+  overflow: hidden;
+}
+.banner-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 1;
+  pointer-events: none;
+}
+.banner-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+.banner-recrue {
+  background: #F1EFE8;
+}
+.banner-recrue::before {
+  background:
+    linear-gradient(#D3D1C7 0 0) 0 20px/100% 1px no-repeat,
+    linear-gradient(#D3D1C7 0 0) 0 40px/100% 1px no-repeat,
+    linear-gradient(#D3D1C7 0 0) 0 60px/100% 1px no-repeat,
+    linear-gradient(#D3D1C7 0 0) 0 80px/100% 1px no-repeat;
+}
+.banner-recrue::after { box-shadow: inset 0 0 0 2px #B4B2A9; }
+
+.banner-apprenti {
+  background: #E6F1FB;
+}
+.banner-apprenti::before {
+  background:
+    radial-gradient(circle at 80px 45px, rgba(181,212,244,.4) 0 55px, transparent 56px),
+    radial-gradient(circle at calc(100% - 80px) 45px, rgba(181,212,244,.4) 0 55px, transparent 56px),
+    radial-gradient(circle at 50% 45px, rgba(181,212,244,.25) 0 40px, transparent 41px);
+}
+.banner-apprenti::after { box-shadow: inset 0 0 0 2.5px #85B7EB; }
+
+.banner-eleve {
+  background: #EAF3DE;
+}
+.banner-eleve::before {
+  background:
+    linear-gradient(135deg, transparent 0 0),
+    repeating-linear-gradient(135deg, rgba(192,221,151,1) 0 18px, rgba(192,221,151,1) 18px 18px, transparent 18px 60px);
+  opacity: .9;
+}
+.banner-eleve::after { box-shadow: inset 0 0 0 3px #97C459; }
+
+.banner-curieux {
+  background: #EEEDFE;
+}
+.banner-curieux::before {
+  background:
+    linear-gradient(135deg, rgba(206,203,246,.5) 0 0);
+  clip-path: polygon(0 100%, 18% 0, 35% 100%, 53% 0, 71% 100%, 88% 0, 100% 55%, 100% 100%);
+}
+.banner-curieux::after { box-shadow: inset 0 0 0 3px #7F77DD; }
+
+.banner-chercheur {
+  background: #FAEEDA;
+}
+.banner-chercheur::before {
+  background:
+    radial-gradient(circle at 0 0, rgba(250,199,117,.4) 0 80px, transparent 81px),
+    radial-gradient(circle at 100% 100%, rgba(250,199,117,.4) 0 80px, transparent 81px),
+    radial-gradient(circle at 50% 50%, rgba(250,199,117,.2) 0 60px, transparent 61px),
+    radial-gradient(circle at 25% 50%, rgba(239,159,39,.15) 0 45px, transparent 46px),
+    radial-gradient(circle at 75% 50%, rgba(239,159,39,.15) 0 45px, transparent 46px);
+}
+.banner-chercheur::after { box-shadow: inset 0 0 0 3.5px #EF9F27, inset 0 0 0 5px rgba(250,199,117,.8); }
+
+.banner-expert {
+  background: #FAECE7;
+}
+.banner-expert::before {
+  background:
+    linear-gradient(#F5C4B3 0 0) 0 0/220px 100% no-repeat,
+    linear-gradient(#F5C4B3 0 0) 100% 0/220px 100% no-repeat,
+    linear-gradient(45deg, transparent 0 0),
+    linear-gradient(135deg, rgba(240,153,123,1) 0 0);
+  opacity: .55;
+}
+.banner-expert::after { box-shadow: inset 0 0 0 4px #D85A30; }
+
+.banner-maitre {
+  background: #26215C;
+}
+.banner-maitre::before {
+  background:
+    radial-gradient(circle at 100px 50%, rgba(60,52,137,.8) 0 70px, transparent 71px),
+    radial-gradient(circle at 50% 50%, rgba(60,52,137,.6) 0 80px, transparent 81px),
+    radial-gradient(circle at calc(100% - 100px) 50%, rgba(60,52,137,.8) 0 70px, transparent 71px),
+    linear-gradient(45deg, rgba(83,74,183,.5) 0 1px, transparent 1px),
+    linear-gradient(-45deg, rgba(83,74,183,.5) 0 1px, transparent 1px);
+}
+.banner-maitre::after { box-shadow: inset 0 0 0 4px #7F77DD, inset 0 0 0 5.5px rgba(175,169,236,.8); }
+
+.banner-savant {
+  background: #04342C;
+}
+.banner-savant::before {
+  background:
+    radial-gradient(circle at 0 100%, rgba(8,80,65,.9) 0 100px, transparent 101px),
+    radial-gradient(circle at 100% 0, rgba(8,80,65,.9) 0 100px, transparent 101px),
+    radial-gradient(circle at 50% 50%, rgba(15,110,86,.6) 0 55px, transparent 56px),
+    linear-gradient(#1D9E75 0 0) 0 30px/100% .8px no-repeat,
+    linear-gradient(#1D9E75 0 0) 0 60px/100% .8px no-repeat;
+  opacity: .95;
+}
+.banner-savant::after { box-shadow: inset 0 0 0 4.5px #1D9E75, inset 0 0 0 6px rgba(93,202,165,.8); }
+
+.banner-genie {
+  background: #412402;
+}
+.banner-genie::before {
+  background:
+    radial-gradient(circle at 0 50%, rgba(99,56,6,.7) 0 90px, transparent 91px),
+    radial-gradient(circle at 100% 50%, rgba(99,56,6,.7) 0 90px, transparent 91px),
+    radial-gradient(circle at 50% 50%, rgba(133,79,11,.5) 0 60px, transparent 61px),
+    linear-gradient(#EF9F27 0 0) 0 50%/100% .8px no-repeat;
+  opacity: .95;
+}
+.banner-genie::after { box-shadow: inset 0 0 0 5px #BA7517, inset 0 0 0 7px rgba(239,159,39,.9), inset 0 0 0 8px rgba(250,199,117,.7); }
+
+.banner-legendaire {
+  background: #1a0a0a;
+}
+.banner-legendaire::before {
+  background:
+    radial-gradient(circle at 140px 50%, rgba(80,19,19,.8) 0 80px, transparent 81px),
+    radial-gradient(circle at 50% 50%, rgba(121,31,31,.6) 0 90px, transparent 91px),
+    radial-gradient(circle at calc(100% - 140px) 50%, rgba(80,19,19,.8) 0 80px, transparent 81px),
+    linear-gradient(45deg, rgba(226,75,74,.3) 0 1.5px, transparent 1.5px),
+    linear-gradient(-45deg, rgba(226,75,74,.3) 0 1.5px, transparent 1.5px),
+    linear-gradient(#E24B4A 0 0) 50% 0/1px 100% no-repeat,
+    linear-gradient(#E24B4A 0 0) 0 50%/100% 1px no-repeat;
+}
+.banner-legendaire::after { box-shadow: inset 0 0 0 5.5px #E24B4A, inset 0 0 0 7.5px rgba(240,149,149,.8), inset 0 0 0 8.5px rgba(247,193,193,.7); }
 
 .rank-text-rainbow {
   background: linear-gradient(90deg, #ef4444, #eab308, #22c55e, #06b6d4, #a855f7);

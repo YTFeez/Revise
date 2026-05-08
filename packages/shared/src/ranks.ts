@@ -29,16 +29,16 @@ export interface Rank {
  * les suivants etendent la progression jusqu'au niveau max.
  */
 export const RANKS: Rank[] = [
-  { name: "Debutant", levelMin: 1, levelMax: 5, borderStyle: "gray", description: "Cadre gris", borderClass: "ring-2 ring-zinc-500", textClass: "text-zinc-300", icon: "leaf" },
-  { name: "Curieux", levelMin: 6, levelMax: 15, borderStyle: "blue", description: "Cadre bleu", borderClass: "ring-2 ring-sky-400", textClass: "text-sky-300", icon: "book" },
-  { name: "Chercheur", levelMin: 16, levelMax: 30, borderStyle: "violet", description: "Cadre violet", borderClass: "ring-2 ring-violet-400", textClass: "text-violet-300", icon: "lab" },
-  { name: "Savant", levelMin: 31, levelMax: 60, borderStyle: "green-star", description: "Cadre vert + etoile", borderClass: "ring-2 ring-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.6)]", textClass: "text-emerald-300", icon: "star" },
-  { name: "Genie", levelMin: 61, levelMax: 120, borderStyle: "gold-crown", description: "Cadre or + couronne", borderClass: "ring-2 ring-amber-400 shadow-[0_0_16px_rgba(251,191,36,0.7)]", textClass: "text-amber-300", icon: "crown" },
-  { name: "Erudit", levelMin: 121, levelMax: 220, borderStyle: "diamond", description: "Cadre diamant", borderClass: "ring-2 ring-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.7)]", textClass: "text-cyan-200", icon: "diamond" },
-  { name: "Sage", levelMin: 221, levelMax: 360, borderStyle: "ruby", description: "Cadre rubis", borderClass: "ring-2 ring-rose-400 shadow-[0_0_20px_rgba(251,113,133,0.7)]", textClass: "text-rose-300", icon: "gem" },
-  { name: "Maitre", levelMin: 361, levelMax: 540, borderStyle: "obsidian", description: "Cadre obsidienne", borderClass: "ring-2 ring-fuchsia-500 shadow-[0_0_22px_rgba(217,70,239,0.7)]", textClass: "text-fuchsia-300", icon: "scroll" },
-  { name: "Cosmique", levelMin: 541, levelMax: 800, borderStyle: "celestial", description: "Cadre celeste etoile", borderClass: "ring-2 ring-indigo-400 shadow-[0_0_28px_rgba(129,140,248,0.8)]", textClass: "text-indigo-200", icon: "galaxy" },
-  { name: "Legende", levelMin: 801, levelMax: 1000, borderStyle: "rainbow", description: "Cadre arc-en-ciel anime", borderClass: "rank-rainbow", textClass: "rank-text-rainbow", icon: "trophy" },
+  { name: "Recrue", levelMin: 1, levelMax: 50, borderStyle: "gray", description: "Niv. 1–50", borderClass: "rank-frame-svg rank-frame-recrue", textClass: "text-zinc-300", icon: "leaf" },
+  { name: "Apprenti", levelMin: 51, levelMax: 150, borderStyle: "blue", description: "Niv. 51–150", borderClass: "rank-frame-svg rank-frame-apprenti", textClass: "text-sky-300", icon: "book" },
+  { name: "Élève", levelMin: 151, levelMax: 300, borderStyle: "green-star", description: "Niv. 151–300", borderClass: "rank-frame-svg rank-frame-eleve", textClass: "text-emerald-300", icon: "star" },
+  { name: "Curieux", levelMin: 301, levelMax: 450, borderStyle: "violet", description: "Niv. 301–450", borderClass: "rank-frame-svg rank-frame-curieux", textClass: "text-violet-300", icon: "lab" },
+  { name: "Chercheur", levelMin: 451, levelMax: 550, borderStyle: "gold-crown", description: "Niv. 451–550", borderClass: "rank-frame-svg rank-frame-chercheur", textClass: "text-amber-300", icon: "crown" },
+  { name: "Expert", levelMin: 551, levelMax: 700, borderStyle: "ruby", description: "Niv. 551–700", borderClass: "rank-frame-svg rank-frame-expert", textClass: "text-orange-300", icon: "gem" },
+  { name: "Maître", levelMin: 701, levelMax: 800, borderStyle: "obsidian", description: "Niv. 701–800", borderClass: "rank-frame-svg rank-frame-maitre", textClass: "text-indigo-200", icon: "scroll" },
+  { name: "Savant", levelMin: 801, levelMax: 900, borderStyle: "celestial", description: "Niv. 801–900", borderClass: "rank-frame-svg rank-frame-savant", textClass: "text-emerald-200", icon: "galaxy" },
+  { name: "Génie", levelMin: 901, levelMax: 999, borderStyle: "diamond", description: "Niv. 901–999", borderClass: "rank-frame-svg rank-frame-genie", textClass: "text-amber-200", icon: "trophy" },
+  { name: "Légendaire", levelMin: 1000, levelMax: 1000, borderStyle: "rainbow", description: "Niv. 1000", borderClass: "rank-frame-svg rank-frame-legendaire", textClass: "text-rose-200", icon: "trophy" },
 ];
 
 export function rankForLevel(level: number): Rank {

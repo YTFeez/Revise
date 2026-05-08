@@ -6,11 +6,31 @@ export function ProfileCard({ user }: { user: PublicUser }) {
   const rank = rankForLevel(user.level);
   const { xpInLevel, xpForNext, progressPct } = levelFromTotalXp(user.totalXp);
   const xpNeeded = Math.max(0, xpForNextLevel(user.level) - xpInLevel);
+  const bannerClass =
+    user.level >= 1000 ? "banner-legendaire" :
+    user.level >= 901 ? "banner-genie" :
+    user.level >= 801 ? "banner-savant" :
+    user.level >= 701 ? "banner-maitre" :
+    user.level >= 551 ? "banner-expert" :
+    user.level >= 451 ? "banner-chercheur" :
+    user.level >= 301 ? "banner-curieux" :
+    user.level >= 151 ? "banner-eleve" :
+    user.level >= 51 ? "banner-apprenti" :
+    "banner-recrue";
 
   return (
-    <div className="card p-5 relative overflow-hidden">
+    <div className={`card p-5 relative overflow-hidden banner-bg ${bannerClass}`}>
+      <div className="absolute inset-0 bg-black/10 pointer-events-none" />
       <div className="flex items-center gap-4">
-        <AvatarBorder level={user.level} username={user.username} size={72} showBadge />
+        <AvatarBorder
+          level={user.level}
+          username={user.username}
+          size={72}
+          showBadge
+          avatar={user.avatar ?? null}
+          borderClass={user.equippedBorderClass ?? undefined}
+          bgClass={user.equippedBgClass ?? undefined}
+        />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <h2 className="text-xl font-bold truncate">{user.username}</h2>
