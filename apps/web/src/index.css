@@ -26,6 +26,10 @@
   --brand-800: 47 48 121;
   --brand-900: 33 34 85;
   --brand-glow: 112 117 230;
+
+  /* Fond global (géré via pseudo-élément pour transitions fluides) */
+  --app-bg: radial-gradient(circle at 20% -10%, rgba(91, 95, 220, 0.18), transparent 50%),
+            radial-gradient(circle at 100% 0%, rgba(167, 139, 250, 0.12), transparent 60%);
 }
 
 html, body, #root {
@@ -35,10 +39,20 @@ html, body, #root {
 body {
   font-family: Inter, ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: rgb(var(--fg));
-  background: radial-gradient(circle at 20% -10%, rgba(91, 95, 220, 0.18), transparent 50%),
-              radial-gradient(circle at 100% 0%, rgba(167, 139, 250, 0.12), transparent 60%),
-              #0f1018;
+  background-color: rgb(var(--bg));
   min-height: 100vh;
+  transition: background-color .25s ease, color .25s ease;
+}
+
+/* couche de fond (dégradés/thèmes) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--app-bg);
+  pointer-events: none;
+  transition: opacity .25s ease, filter .25s ease;
 }
 
 /* Thèmes: ajustent aussi l'UI (cards, boutons, inputs, textes) via tokens */
@@ -152,6 +166,7 @@ body.app-theme-tableau-noir {
 @layer components {
   .card {
     @apply bg-bg-card border border-bg-ring/60 rounded-2xl shadow-sm;
+    transition: background-color .25s ease, border-color .25s ease, box-shadow .25s ease, color .25s ease;
   }
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
@@ -169,6 +184,7 @@ body.app-theme-tableau-noir {
   .input {
     @apply w-full bg-bg-soft border border-bg-ring rounded-xl px-3 py-2 text-sm
            text-zinc-100 placeholder-zinc-500 outline-none focus:border-brand-400;
+    transition: background-color .25s ease, border-color .25s ease, color .25s ease;
   }
   .pill {
     @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium;
@@ -318,65 +334,53 @@ body.app-theme-tableau-noir {
 
 /* Thèmes application (fond global) */
 body.theme-nebula, .theme-nebula {
-  background: radial-gradient(circle at 15% 20%, rgba(167,139,250,.30), transparent 55%),
-              radial-gradient(circle at 80% 10%, rgba(34,211,238,.22), transparent 60%),
-              radial-gradient(circle at 60% 80%, rgba(236,72,153,.14), transparent 55%),
-              linear-gradient(180deg, rgba(10,10,18,1), rgba(15,16,24,1));
+  --app-bg: radial-gradient(circle at 15% 20%, rgba(167,139,250,.30), transparent 55%),
+            radial-gradient(circle at 80% 10%, rgba(34,211,238,.22), transparent 60%),
+            radial-gradient(circle at 60% 80%, rgba(236,72,153,.14), transparent 55%);
 }
 body.theme-synthwave, .theme-synthwave {
-  background: radial-gradient(circle at 20% 15%, rgba(251,113,133,.22), transparent 55%),
-              radial-gradient(circle at 80% 25%, rgba(99,102,241,.22), transparent 60%),
-              linear-gradient(180deg, rgba(9,10,20,1), rgba(15,16,24,1));
+  --app-bg: radial-gradient(circle at 20% 15%, rgba(251,113,133,.22), transparent 55%),
+            radial-gradient(circle at 80% 25%, rgba(99,102,241,.22), transparent 60%);
 }
 body.theme-emerald-night, .theme-emerald-night {
-  background: radial-gradient(circle at 20% 25%, rgba(16,185,129,.18), transparent 55%),
-              radial-gradient(circle at 80% 15%, rgba(34,197,94,.10), transparent 60%),
-              linear-gradient(180deg, rgba(10,14,16,1), rgba(15,16,24,1));
+  --app-bg: radial-gradient(circle at 20% 25%, rgba(16,185,129,.18), transparent 55%),
+            radial-gradient(circle at 80% 15%, rgba(34,197,94,.10), transparent 60%);
 }
 body.theme-obsidian, .theme-obsidian {
-  background: radial-gradient(circle at 25% 20%, rgba(255,255,255,.06), transparent 55%),
-              linear-gradient(180deg, rgba(10,10,12,1), rgba(15,16,24,1));
+  --app-bg: radial-gradient(circle at 25% 20%, rgba(255,255,255,.06), transparent 55%);
 }
 
 /* Thèmes d'app (previews inspirées de app_themes.html) */
 .app-theme-classique-clair, body.app-theme-classique-clair {
-  background: radial-gradient(circle at 20% -10%, rgba(127,119,221,.18), transparent 55%),
-              radial-gradient(circle at 100% 0%, rgba(206,203,246,.35), transparent 60%),
-              #F6F5FF;
+  --app-bg: radial-gradient(circle at 20% -10%, rgba(127,119,221,.18), transparent 55%),
+            radial-gradient(circle at 100% 0%, rgba(206,203,246,.35), transparent 60%);
 }
 .app-theme-nuit-profonde, body.app-theme-nuit-profonde {
-  background: radial-gradient(circle at 20% 15%, rgba(83,74,183,.22), transparent 55%),
-              radial-gradient(circle at 80% 25%, rgba(38,33,92,.25), transparent 60%),
-              #0D0D1A;
+  --app-bg: radial-gradient(circle at 20% 15%, rgba(83,74,183,.22), transparent 55%),
+            radial-gradient(circle at 80% 25%, rgba(38,33,92,.25), transparent 60%);
 }
 .app-theme-foret, body.app-theme-foret {
-  background: radial-gradient(circle at 20% 25%, rgba(59,109,17,.25), transparent 55%),
-              radial-gradient(circle at 80% 15%, rgba(151,196,89,.12), transparent 60%),
-              #1A2E1A;
+  --app-bg: radial-gradient(circle at 20% 25%, rgba(59,109,17,.25), transparent 55%),
+            radial-gradient(circle at 80% 15%, rgba(151,196,89,.12), transparent 60%);
 }
 .app-theme-cosmos, body.app-theme-cosmos {
-  background: radial-gradient(circle at 20% 25%, rgba(24,95,165,.22), transparent 55%),
-              radial-gradient(circle at 80% 10%, rgba(127,119,221,.16), transparent 60%),
-              #080818;
+  --app-bg: radial-gradient(circle at 20% 25%, rgba(24,95,165,.22), transparent 55%),
+            radial-gradient(circle at 80% 10%, rgba(127,119,221,.16), transparent 60%);
 }
 .app-theme-coucher-soleil, body.app-theme-coucher-soleil {
-  background: radial-gradient(circle at 20% 20%, rgba(239,159,39,.24), transparent 55%),
-              radial-gradient(circle at 80% 25%, rgba(216,90,48,.18), transparent 60%),
-              #2A1006;
+  --app-bg: radial-gradient(circle at 20% 20%, rgba(239,159,39,.24), transparent 55%),
+            radial-gradient(circle at 80% 25%, rgba(216,90,48,.18), transparent 60%);
 }
 .app-theme-sakura, body.app-theme-sakura {
-  background: radial-gradient(circle at 20% 15%, rgba(212,83,126,.20), transparent 55%),
-              radial-gradient(circle at 85% 25%, rgba(237,147,177,.22), transparent 60%),
-              #FDF0F5;
+  --app-bg: radial-gradient(circle at 20% 15%, rgba(212,83,126,.20), transparent 55%),
+            radial-gradient(circle at 85% 25%, rgba(237,147,177,.22), transparent 60%);
 }
 .app-theme-ocean, body.app-theme-ocean {
-  background: radial-gradient(circle at 25% 20%, rgba(8,111,86,.20), transparent 55%),
-              radial-gradient(circle at 80% 25%, rgba(24,95,165,.18), transparent 60%),
-              #04142A;
+  --app-bg: radial-gradient(circle at 25% 20%, rgba(8,111,86,.20), transparent 55%),
+            radial-gradient(circle at 80% 25%, rgba(24,95,165,.18), transparent 60%);
 }
 .app-theme-tableau-noir, body.app-theme-tableau-noir {
-  background: radial-gradient(circle at 25% 20%, rgba(255,255,255,.06), transparent 55%),
-              #1A1F1A;
+  --app-bg: radial-gradient(circle at 25% 20%, rgba(255,255,255,.06), transparent 55%);
 }
 
 .theme-preview {
