@@ -13,6 +13,7 @@ const navItems = [
   { to: "/classement", label: "Classement" },
   { to: "/amis", label: "Amis" },
   { to: "/boutique", label: "Boutique" },
+  { to: "/inventaire", label: "Inventaire" },
 ];
 
 export default function Layout() {
@@ -76,7 +77,7 @@ export default function Layout() {
                   onClick={() => navigate("/avatar")}
                   title="Mon profil"
                 >
-                  <AvatarBorder level={user.level} username={user.username} size={36} />
+                  <AvatarBorder level={user.level} username={user.username} size={36} avatar={user.avatar ?? null} />
                   <span className="hidden sm:flex flex-col items-start leading-tight">
                     <span className="text-sm font-semibold">{user.username}</span>
                     <span className={`text-[11px] ${rankForLevel(user.level).textClass}`}>Niv. {user.level} - {rankForLevel(user.level).name}</span>

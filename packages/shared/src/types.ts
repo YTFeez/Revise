@@ -15,8 +15,18 @@ export interface PublicUser {
   equippedBorder?: string | null;
   equippedHat?: string | null;
   equippedBg?: string | null;
+  avatar?: AvatarConfig | null;
   rankName: string;
   isAdmin?: boolean;
+}
+
+export type AvatarBase = "sumo" | "ninja" | "mage" | "robot" | "alien";
+
+export interface AvatarConfig {
+  base: AvatarBase;
+  skin: string; // hex
+  primary: string; // hex
+  secondary: string; // hex
 }
 
 export interface SubjectProgress {

@@ -93,6 +93,7 @@ model User {
   equippedBorder   String?
   equippedHat      String?
   equippedBg       String?
+  avatarJson       Json?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 

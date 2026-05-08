@@ -43,6 +43,9 @@ export default function ShopPage() {
   const [rotation, setRotation] = useState<Rotation | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"ALL" | Cosmetic["type"]>("ALL");
+  const [onlyNotOwned, setOnlyNotOwned] = useState(false);
 
   function refresh() {
     api<Cosmetic[]>("/cosmetics").then(setItems).catch(() => undefined);
@@ -90,6 +93,13 @@ export default function ShopPage() {
     BG: items.filter((i) => i.type === "BG"),
     BADGE: items.filter((i) => i.type === "BADGE"),
   };
+  const filtered = items.filter((i) => {
+    const q = query.trim().toLowerCase();
+    if (q && !i.name.toLowerCase().includes(q) && !(i.description || "").toLowerCase().includes(q)) return false;
+    if (typeFilter !== "ALL" && i.type !== typeFilter) return false;
+    if (onlyNotOwned && i.owned) return false;
+    return true;
+  });
 
   return (
     <div>
@@ -101,6 +111,21 @@ export default function ShopPage() {
         {user && <div className="pill-violet">{user.coins} coins</div>}
       </div>
       {error && <div className="text-rose-400 text-sm mb-3">{error}</div>}
+
+      <div className="card p-4 mb-6 flex flex-wrap gap-2 items-center">
+        <input className="input w-full sm:w-64" placeholder="Rechercher un cosmetique..." value={query} onChange={(e) => setQuery(e.target.value)} />
+        <select className="input w-full sm:w-44" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as any)}>
+          <option value="ALL">Tous types</option>
+          <option value="BORDER">Cadres</option>
+          <option value="HAT">Chapeaux</option>
+          <option value="BG">Fonds</option>
+          <option value="BADGE">Badges</option>
+        </select>
+        <label className="flex items-center gap-2 text-sm text-zinc-300">
+          <input type="checkbox" checked={onlyNotOwned} onChange={(e) => setOnlyNotOwned(e.target.checked)} />
+          Afficher seulement ceux non possedes
+        </label>
+      </div>
 
       {rotation && (
         <section className="card p-5 mb-8">
@@ -155,7 +180,7 @@ export default function ShopPage() {
         <section key={key} className="mb-8">
           <h3 className="text-sm font-semibold text-zinc-300 mb-2">{title}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {grouped[key].map((it) => {
+            {filtered.filter((it) => it.type === key).map((it) => {
               const locked = !!user && user.level < it.requiredLevel;
               return (
                 <div key={it.id} className={`rounded-2xl border p-4 ${rarityClass[it.rarity] || rarityClass.common}`}>

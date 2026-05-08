@@ -13,6 +13,7 @@ import ShopPage from "./pages/ShopPage";
 import AvatarPage from "./pages/AvatarPage";
 import AdminPage from "./pages/AdminPage";
 import FriendsPage from "./pages/FriendsPage";
+import InventoryPage from "./pages/InventoryPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 export default function App() {
@@ -45,6 +46,14 @@ export default function App() {
           }
         />
         <Route path="boutique" element={<ShopPage />} />
+        <Route
+          path="inventaire"
+          element={
+            <ProtectedRoute>
+              <InventoryPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="avatar"
           element={

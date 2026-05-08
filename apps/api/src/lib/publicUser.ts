@@ -23,6 +23,7 @@ export function toPublicUser(u: User): PublicUser {
     equippedBorder: u.equippedBorder,
     equippedHat: u.equippedHat,
     equippedBg: u.equippedBg,
+    avatar: (u as any).avatarJson ?? null,
     rankName: rank.name,
     isAdmin: u.isAdmin,
   };
