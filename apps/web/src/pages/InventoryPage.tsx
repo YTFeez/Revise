@@ -11,7 +11,7 @@ interface OwnedCosmetic {
     id: string;
     slug: string;
     name: string;
-    type: "BORDER" | "HAT" | "BG" | "BADGE";
+    type: "BORDER" | "HAT" | "BG" | "APP_BG" | "BADGE";
     borderClass?: string;
     rarity: string;
   };
@@ -20,7 +20,7 @@ interface OwnedCosmetic {
 export default function InventoryPage() {
   const { user, setUser } = useAuth();
   const [items, setItems] = useState<OwnedCosmetic[]>([]);
-  const [filter, setFilter] = useState<"ALL" | "BORDER" | "HAT" | "BG" | "BADGE">("ALL");
+  const [filter, setFilter] = useState<"ALL" | "BORDER" | "HAT" | "BG" | "APP_BG" | "BADGE">("ALL");
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +42,7 @@ export default function InventoryPage() {
 
   useEffect(() => { refresh(); }, []);
 
-  async function equip(type: "BORDER" | "HAT" | "BG", slug: string | null) {
+  async function equip(type: "BORDER" | "HAT" | "BG" | "APP_BG", slug: string | null) {
     setBusy(`${type}:${slug ?? "none"}`);
     setError(null);
     try {
@@ -73,7 +73,7 @@ export default function InventoryPage() {
         <div className="mt-4 flex flex-wrap gap-2 items-center">
           <input className="input w-full sm:w-64" placeholder="Rechercher..." value={q} onChange={(e) => setQ(e.target.value)} />
           <div className="flex items-center bg-bg-soft rounded-lg p-0.5 text-xs">
-            {(["ALL", "BORDER", "HAT", "BG", "BADGE"] as const).map((t) => (
+            {(["ALL", "BORDER", "HAT", "BG", "APP_BG", "BADGE"] as const).map((t) => (
               <button
                 key={t}
                 className={`px-3 py-1 rounded-md ${filter === t ? "bg-bg-ring text-white" : "text-zinc-400"}`}
@@ -134,6 +134,15 @@ export default function InventoryPage() {
                   Badge (bientot)
                 </button>
               )}
+              {it.cosmetic.type === "APP_BG" && (
+                <button
+                  className={it.equipped ? "btn-outline w-full" : "btn-primary w-full"}
+                  disabled={busy !== null}
+                  onClick={() => equip("APP_BG", it.equipped ? null : it.cosmetic.slug)}
+                >
+                  {it.equipped ? "Retirer" : "Activer"}
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -146,6 +155,7 @@ export default function InventoryPage() {
           <button className="btn-outline" disabled={busy !== null} onClick={() => equip("BORDER", null)}>Retirer cadre</button>
           <button className="btn-outline" disabled={busy !== null} onClick={() => equip("HAT", null)}>Retirer chapeau</button>
           <button className="btn-outline" disabled={busy !== null} onClick={() => equip("BG", null)}>Retirer fond</button>
+          <button className="btn-outline" disabled={busy !== null} onClick={() => equip("APP_BG", null)}>Retirer fond d'app</button>
         </div>
       </div>
     </div>

@@ -7,7 +7,7 @@ interface Cosmetic {
   id: string;
   slug: string;
   name: string;
-  type: "BORDER" | "HAT" | "BG" | "BADGE";
+  type: "BORDER" | "HAT" | "BG" | "APP_BG" | "BADGE";
   description?: string;
   priceCoins: number;
   requiredLevel: number;
@@ -119,6 +119,7 @@ export default function ShopPage() {
           <option value="BORDER">Cadres</option>
           <option value="HAT">Chapeaux</option>
           <option value="BG">Fonds</option>
+          <option value="APP_BG">Fonds d'application</option>
           <option value="BADGE">Badges</option>
         </select>
         <label className="flex items-center gap-2 text-sm text-zinc-300">
@@ -175,6 +176,7 @@ export default function ShopPage() {
         ["BORDER", "Cadres d'avatar"],
         ["HAT", "Chapeaux"],
         ["BG", "Fonds"],
+        ["APP_BG", "Fonds d'application"],
         ["BADGE", "Badges"],
       ] as const).map(([key, title]) => (
         <section key={key} className="mb-8">

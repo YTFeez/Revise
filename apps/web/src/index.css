@@ -120,6 +120,28 @@ body {
               linear-gradient(180deg, rgba(39,39,70,.95), rgba(15,16,24,1));
 }
 
+/* Thèmes application (fond global) */
+body.theme-nebula {
+  background: radial-gradient(circle at 15% 20%, rgba(167,139,250,.30), transparent 55%),
+              radial-gradient(circle at 80% 10%, rgba(34,211,238,.22), transparent 60%),
+              radial-gradient(circle at 60% 80%, rgba(236,72,153,.14), transparent 55%),
+              linear-gradient(180deg, rgba(10,10,18,1), rgba(15,16,24,1));
+}
+body.theme-synthwave {
+  background: radial-gradient(circle at 20% 15%, rgba(251,113,133,.22), transparent 55%),
+              radial-gradient(circle at 80% 25%, rgba(99,102,241,.22), transparent 60%),
+              linear-gradient(180deg, rgba(9,10,20,1), rgba(15,16,24,1));
+}
+body.theme-emerald-night {
+  background: radial-gradient(circle at 20% 25%, rgba(16,185,129,.18), transparent 55%),
+              radial-gradient(circle at 80% 15%, rgba(34,197,94,.10), transparent 60%),
+              linear-gradient(180deg, rgba(10,14,16,1), rgba(15,16,24,1));
+}
+body.theme-obsidian {
+  background: radial-gradient(circle at 25% 20%, rgba(255,255,255,.06), transparent 55%),
+              linear-gradient(180deg, rgba(10,10,12,1), rgba(15,16,24,1));
+}
+
 .rank-text-rainbow {
   background: linear-gradient(90deg, #ef4444, #eab308, #22c55e, #06b6d4, #a855f7);
   -webkit-background-clip: text;

@@ -47,6 +47,12 @@ async function main() {
     { slug: "bg-galaxy", name: "Fond galaxie", type: "BG", priceCoins: 1500, requiredLevel: 121, borderClass: "cos-bg-galaxy", rarity: "epic" },
     { slug: "bg-sunset", name: "Fond coucher de soleil", type: "BG", priceCoins: 700, requiredLevel: 60, borderClass: "cos-bg-sunset", rarity: "rare" },
     { slug: "badge-streak", name: "Badge serie 7 jours", type: "BADGE", priceCoins: 75, requiredLevel: 1, rarity: "common" },
+
+    // Fonds d'application (theme global)
+    { slug: "appbg-nebula", name: "Theme Nebula", type: "APP_BG", priceCoins: 300, requiredLevel: 12, borderClass: "theme-nebula", rarity: "rare", description: "Fond cosmique violet/bleu." },
+    { slug: "appbg-synthwave", name: "Theme Synthwave", type: "APP_BG", priceCoins: 600, requiredLevel: 30, borderClass: "theme-synthwave", rarity: "epic", description: "Neon rose/violet, style premium." },
+    { slug: "appbg-emerald-night", name: "Theme Emerald Night", type: "APP_BG", priceCoins: 450, requiredLevel: 20, borderClass: "theme-emerald-night", rarity: "rare", description: "Vert profond, calme, focus." },
+    { slug: "appbg-obsidian", name: "Theme Obsidian", type: "APP_BG", priceCoins: 200, requiredLevel: 8, borderClass: "theme-obsidian", rarity: "common", description: "Minimal sombre, ultra lisible." },
   ] as const;
 
   for (const c of cosmetics) {
@@ -70,7 +76,7 @@ async function main() {
     create: { startsAt: start, endsAt: end },
   });
 
-  const featuredSlugs = ["border-violet", "hat-graduate", "bg-stars"] as const;
+  const featuredSlugs = ["border-violet", "hat-graduate", "bg-stars", "appbg-synthwave"] as const;
   const featured = await prisma.cosmetic.findMany({ where: { slug: { in: featuredSlugs as any } } });
   for (const c of featured) {
     await prisma.shopListing.upsert({

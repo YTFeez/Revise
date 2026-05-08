@@ -24,6 +24,7 @@ export function toPublicUser(u: User): PublicUser {
     equippedBorder: u.equippedBorder,
     equippedHat: u.equippedHat,
     equippedBg: u.equippedBg,
+    equippedAppBg: (u as any).equippedAppBg ?? null,
     avatar: (u as any).avatarJson ?? null,
     rankName: rank.name,
     isAdmin: u.isAdmin,
@@ -32,7 +33,8 @@ export function toPublicUser(u: User): PublicUser {
 
 export async function toPublicUserWithCosmetics(u: User): Promise<PublicUser> {
   const base = toPublicUser(u);
-  const slugs = [u.equippedBorder, u.equippedBg].filter((x): x is string => !!x);
+  const equippedAppBg = (u as any).equippedAppBg as string | null | undefined;
+  const slugs = [u.equippedBorder, u.equippedBg, equippedAppBg].filter((x): x is string => !!x);
   if (slugs.length === 0) return base;
 
   const cosmetics = await prisma.cosmetic.findMany({
@@ -45,5 +47,6 @@ export async function toPublicUserWithCosmetics(u: User): Promise<PublicUser> {
     ...base,
     equippedBorderClass: u.equippedBorder ? (bySlug.get(u.equippedBorder)?.borderClass ?? null) : null,
     equippedBgClass: u.equippedBg ? (bySlug.get(u.equippedBg)?.borderClass ?? null) : null,
+    equippedAppBgClass: equippedAppBg ? (bySlug.get(equippedAppBg)?.borderClass ?? null) : null,
   };
 }

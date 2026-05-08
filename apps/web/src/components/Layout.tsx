@@ -5,6 +5,12 @@ import { rankForLevel } from "@revise-plus/shared";
 import { AvatarBorder } from "./AvatarBorder";
 import { getSocket } from "../lib/socket";
 
+function setBodyTheme(themeClass: string | null | undefined) {
+  const themes = ["theme-nebula", "theme-synthwave", "theme-emerald-night", "theme-obsidian"];
+  for (const t of themes) document.body.classList.remove(t);
+  if (themeClass) document.body.classList.add(themeClass);
+}
+
 const navItems = [
   { to: "/", label: "Accueil" },
   { to: "/cours", label: "Cours" },
@@ -23,6 +29,10 @@ export default function Layout() {
   useEffect(() => {
     if (!loaded) fetchMe();
   }, [loaded, fetchMe]);
+
+  useEffect(() => {
+    setBodyTheme(user?.equippedAppBgClass ?? null);
+  }, [user?.equippedAppBgClass]);
 
   useEffect(() => {
     if (!user) return;

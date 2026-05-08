@@ -5,7 +5,7 @@ import { requireAuth } from "../auth.js";
 import { toPublicUser } from "../lib/publicUser.js";
 
 const PurchaseSchema = z.object({ cosmeticSlug: z.string() });
-const EquipSchema = z.object({ cosmeticSlug: z.string().nullable(), type: z.enum(["BORDER", "HAT", "BG"]) });
+const EquipSchema = z.object({ cosmeticSlug: z.string().nullable(), type: z.enum(["BORDER", "HAT", "BG", "APP_BG"]) });
 
 async function tryGetUserIdFromRequest(request: any): Promise<string | null> {
   try {
@@ -79,7 +79,7 @@ export const shopRoutes: FastifyPluginAsync = async (app) => {
   app.get("/me/cosmetics", { preHandler: requireAuth }, async (request) => {
     const user = await prisma.user.findUniqueOrThrow({
       where: { id: request.userId! },
-      select: { equippedBorder: true, equippedHat: true, equippedBg: true },
+      select: { equippedBorder: true, equippedHat: true, equippedBg: true, equippedAppBg: true },
     });
     const list = await prisma.userCosmetic.findMany({
       where: { userId: request.userId! },
@@ -93,6 +93,7 @@ export const shopRoutes: FastifyPluginAsync = async (app) => {
         (uc.cosmetic.type === "BORDER" && user.equippedBorder === uc.cosmetic.slug) ||
         (uc.cosmetic.type === "HAT" && user.equippedHat === uc.cosmetic.slug) ||
         (uc.cosmetic.type === "BG" && user.equippedBg === uc.cosmetic.slug) ||
+        (uc.cosmetic.type === "APP_BG" && user.equippedAppBg === uc.cosmetic.slug) ||
         false,
       cosmetic: {
         id: uc.cosmetic.id,
@@ -155,6 +156,7 @@ export const shopRoutes: FastifyPluginAsync = async (app) => {
     if (parsed.data.type === "BORDER") data.equippedBorder = slug;
     if (parsed.data.type === "HAT") data.equippedHat = slug;
     if (parsed.data.type === "BG") data.equippedBg = slug;
+    if (parsed.data.type === "APP_BG") data.equippedAppBg = slug;
     const user = await prisma.user.update({ where: { id: userId }, data });
 
     return reply.send({ user: toPublicUser(user) });

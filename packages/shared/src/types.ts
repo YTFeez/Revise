@@ -1,7 +1,7 @@
 export type GradeLevel = "6e" | "5e" | "4e" | "3e";
 export type QuizType = "QUIZ" | "EVAL";
 export type QuestionType = "QCM" | "VRAI_FAUX" | "TEXTE";
-export type CosmeticType = "BORDER" | "HAT" | "BG" | "BADGE";
+export type CosmeticType = "BORDER" | "HAT" | "BG" | "APP_BG" | "BADGE";
 
 export interface PublicUser {
   id: string;
@@ -15,8 +15,10 @@ export interface PublicUser {
   equippedBorder?: string | null;
   equippedHat?: string | null;
   equippedBg?: string | null;
+  equippedAppBg?: string | null;
   equippedBorderClass?: string | null;
   equippedBgClass?: string | null;
+  equippedAppBgClass?: string | null;
   avatar?: AvatarConfig | null;
   rankName: string;
   isAdmin?: boolean;

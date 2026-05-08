@@ -30,6 +30,7 @@ enum CosmeticType {
   BORDER
   HAT
   BG
+  APP_BG
   BADGE
 }
 
@@ -93,6 +94,7 @@ model User {
   equippedBorder   String?
   equippedHat      String?
   equippedBg       String?
+  equippedAppBg    String?
   avatarJson       Json?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
