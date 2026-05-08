@@ -2,7 +2,7 @@ import type { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
 import { prisma } from "../prisma.js";
 import { requireAuth } from "../auth.js";
-import { toPublicUser } from "../lib/publicUser.js";
+import { toPublicUser, toPublicUserWithCosmetics } from "../lib/publicUser.js";
 
 const PurchaseSchema = z.object({ cosmeticSlug: z.string() });
 const EquipSchema = z.object({ cosmeticSlug: z.string().nullable(), type: z.enum(["BORDER", "HAT", "BG", "APP_BG"]) });
@@ -158,7 +158,6 @@ export const shopRoutes: FastifyPluginAsync = async (app) => {
     if (parsed.data.type === "BG") data.equippedBg = slug;
     if (parsed.data.type === "APP_BG") data.equippedAppBg = slug;
     const user = await prisma.user.update({ where: { id: userId }, data });
-
-    return reply.send({ user: toPublicUser(user) });
+    return reply.send({ user: await toPublicUserWithCosmetics(user) });
   });
 };
