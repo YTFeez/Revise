@@ -6,26 +6,26 @@ export default {
     extend: {
       colors: {
         bg: {
-          DEFAULT: "#0f1018",
-          card: "#171927",
-          soft: "#1f2233",
-          ring: "#2a2e44",
+          DEFAULT: "rgb(var(--bg) / <alpha-value>)",
+          card: "rgb(var(--bg-card) / <alpha-value>)",
+          soft: "rgb(var(--bg-soft) / <alpha-value>)",
+          ring: "rgb(var(--bg-ring) / <alpha-value>)",
         },
         brand: {
-          50: "#eef0ff",
-          100: "#dadefb",
-          200: "#b8bff7",
-          300: "#8a8ff0",
-          400: "#6b6ee8",
-          500: "#5b5fdc",
-          600: "#4d4ec5",
-          700: "#3f409e",
-          800: "#2f3079",
-          900: "#212255",
+          50: "rgb(var(--brand-50) / <alpha-value>)",
+          100: "rgb(var(--brand-100) / <alpha-value>)",
+          200: "rgb(var(--brand-200) / <alpha-value>)",
+          300: "rgb(var(--brand-300) / <alpha-value>)",
+          400: "rgb(var(--brand-400) / <alpha-value>)",
+          500: "rgb(var(--brand-500) / <alpha-value>)",
+          600: "rgb(var(--brand-600) / <alpha-value>)",
+          700: "rgb(var(--brand-700) / <alpha-value>)",
+          800: "rgb(var(--brand-800) / <alpha-value>)",
+          900: "rgb(var(--brand-900) / <alpha-value>)",
         },
       },
       boxShadow: {
-        glow: "0 0 24px rgba(112, 117, 230, 0.35)",
+        glow: "0 0 24px rgb(var(--brand-glow) / 0.35)",
       },
       fontFamily: {
         sans: [

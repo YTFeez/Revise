@@ -3,7 +3,29 @@
 @tailwind utilities;
 
 :root {
+  /* Tokens UI (valeurs par défaut = thème sombre actuel) */
   color-scheme: dark;
+
+  --fg: 244 244 245; /* zinc-100 */
+  --fg-muted: 161 161 170; /* zinc-400 */
+  --fg-soft: 212 212 216; /* zinc-300 */
+
+  --bg: 15 16 24;
+  --bg-card: 23 25 39;
+  --bg-soft: 31 34 51;
+  --bg-ring: 42 46 68;
+
+  --brand-50: 238 240 255;
+  --brand-100: 218 222 251;
+  --brand-200: 184 191 247;
+  --brand-300: 138 143 240;
+  --brand-400: 107 110 232;
+  --brand-500: 91 95 220;
+  --brand-600: 77 78 197;
+  --brand-700: 63 64 158;
+  --brand-800: 47 48 121;
+  --brand-900: 33 34 85;
+  --brand-glow: 112 117 230;
 }
 
 html, body, #root {
@@ -12,10 +34,119 @@ html, body, #root {
 
 body {
   font-family: Inter, ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: rgb(var(--fg));
   background: radial-gradient(circle at 20% -10%, rgba(91, 95, 220, 0.18), transparent 50%),
               radial-gradient(circle at 100% 0%, rgba(167, 139, 250, 0.12), transparent 60%),
               #0f1018;
   min-height: 100vh;
+}
+
+/* Thèmes: ajustent aussi l'UI (cards, boutons, inputs, textes) via tokens */
+body.app-theme-classique-clair {
+  color-scheme: light;
+  --fg: 38 33 92;
+  --fg-muted: 136 135 128;
+  --fg-soft: 92 93 90;
+  --bg: 246 245 255;
+  --bg-card: 255 255 255;
+  --bg-soft: 238 237 254;
+  --bg-ring: 206 203 246;
+  --brand-400: 127 119 221;
+  --brand-500: 83 74 183;
+  --brand-300: 175 169 236;
+  --brand-600: 60 52 137;
+  --brand-glow: 127 119 221;
+}
+body.app-theme-nuit-profonde {
+  color-scheme: dark;
+  --fg: 238 237 254;
+  --fg-muted: 127 119 221;
+  --bg: 13 13 26;
+  --bg-card: 18 18 42;
+  --bg-soft: 26 26 58;
+  --bg-ring: 38 33 92;
+  --brand-400: 127 119 221;
+  --brand-500: 83 74 183;
+  --brand-600: 60 52 137;
+  --brand-glow: 83 74 183;
+}
+body.app-theme-foret {
+  color-scheme: dark;
+  --fg: 192 221 151;
+  --fg-muted: 99 153 34;
+  --bg: 26 46 26;
+  --bg-card: 20 34 20;
+  --bg-soft: 31 58 31;
+  --bg-ring: 39 80 10;
+  --brand-400: 151 196 89;
+  --brand-500: 99 153 34;
+  --brand-600: 59 109 17;
+  --brand-glow: 151 196 89;
+}
+body.app-theme-cosmos {
+  color-scheme: dark;
+  --fg: 181 212 244;
+  --fg-muted: 55 138 221;
+  --bg: 8 8 24;
+  --bg-card: 5 5 16;
+  --bg-soft: 12 26 58;
+  --bg-ring: 12 68 124;
+  --brand-400: 133 183 235;
+  --brand-500: 24 95 165;
+  --brand-600: 12 68 124;
+  --brand-glow: 133 183 235;
+}
+body.app-theme-coucher-soleil {
+  color-scheme: dark;
+  --fg: 250 199 117;
+  --fg-muted: 186 117 23;
+  --bg: 42 16 6;
+  --bg-card: 30 10 4;
+  --bg-soft: 58 21 8;
+  --bg-ring: 99 56 6;
+  --brand-400: 250 199 117;
+  --brand-500: 239 159 39;
+  --brand-600: 186 117 23;
+  --brand-glow: 239 159 39;
+}
+body.app-theme-sakura {
+  color-scheme: light;
+  --fg: 75 21 40;
+  --fg-muted: 153 53 86;
+  --bg: 253 240 245;
+  --bg-card: 255 255 255;
+  --bg-soft: 251 234 240;
+  --bg-ring: 244 192 209;
+  --brand-400: 212 83 126;
+  --brand-500: 153 53 86;
+  --brand-600: 114 36 62;
+  --brand-glow: 212 83 126;
+}
+body.app-theme-ocean {
+  color-scheme: dark;
+  --fg: 181 212 244;
+  --fg-muted: 93 202 165;
+  --bg: 4 20 42;
+  --bg-card: 2 13 30;
+  --bg-soft: 6 30 58;
+  --bg-ring: 12 68 124;
+  --brand-400: 93 202 165;
+  --brand-500: 15 110 86;
+  --brand-600: 8 80 65;
+  --brand-glow: 93 202 165;
+}
+body.app-theme-tableau-noir {
+  color-scheme: dark;
+  --fg: 241 239 232;
+  --fg-muted: 180 178 169;
+  --bg: 26 31 26;
+  --bg-card: 20 24 20;
+  --bg-soft: 34 39 34;
+  --bg-ring: 68 68 65;
+  --brand-400: 211 209 199;
+  --brand-500: 95 94 90;
+  --brand-600: 68 68 65;
+  --brand-glow: 211 209 199;
 }
 
 @layer components {
