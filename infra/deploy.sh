@@ -29,6 +29,7 @@ pnpm --filter @revise-plus/api db:push
 pnpm --filter @revise-plus/api db:seed || true
 
 echo "==> Build web + api"
+pnpm --filter @revise-plus/shared build
 pnpm build:web
 pnpm build:api
 
