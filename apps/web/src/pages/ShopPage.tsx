@@ -190,6 +190,9 @@ export default function ShopPage() {
                     <div className="font-semibold">{it.name}</div>
                     <span className="pill-zinc text-[10px] uppercase">{it.rarity}</span>
                   </div>
+                  {it.type === "APP_BG" && (
+                    <div className={`theme-preview mt-3 ${it.borderClass || ""}`} />
+                  )}
                   {it.description && <p className="text-xs text-zinc-400 mt-1">{it.description}</p>}
                   <div className="flex items-center justify-between mt-3">
                     <div className="text-xs text-zinc-400">Niv. {it.requiredLevel}</div>

@@ -53,6 +53,16 @@ async function main() {
     { slug: "appbg-synthwave", name: "Theme Synthwave", type: "APP_BG", priceCoins: 600, requiredLevel: 30, borderClass: "theme-synthwave", rarity: "epic", description: "Neon rose/violet, style premium." },
     { slug: "appbg-emerald-night", name: "Theme Emerald Night", type: "APP_BG", priceCoins: 450, requiredLevel: 20, borderClass: "theme-emerald-night", rarity: "rare", description: "Vert profond, calme, focus." },
     { slug: "appbg-obsidian", name: "Theme Obsidian", type: "APP_BG", priceCoins: 200, requiredLevel: 8, borderClass: "theme-obsidian", rarity: "common", description: "Minimal sombre, ultra lisible." },
+
+    // Thèmes d'app (set complet inspiré de app_themes.html)
+    { slug: "appbg-classique-clair", name: "Classique clair", type: "APP_BG", priceCoins: 0, requiredLevel: 1, borderClass: "app-theme-classique-clair", rarity: "common", description: "Theme par defaut, doux et lisible." },
+    { slug: "appbg-nuit-profonde", name: "Nuit profonde", type: "APP_BG", priceCoins: 250, requiredLevel: 10, borderClass: "app-theme-nuit-profonde", rarity: "rare", description: "Mode sombre intense." },
+    { slug: "appbg-foret", name: "Forêt", type: "APP_BG", priceCoins: 250, requiredLevel: 12, borderClass: "app-theme-foret", rarity: "rare", description: "Nature et serenite." },
+    { slug: "appbg-cosmos", name: "Cosmos", type: "APP_BG", priceCoins: 500, requiredLevel: 20, borderClass: "app-theme-cosmos", rarity: "epic", description: "Galaxie et etoiles." },
+    { slug: "appbg-coucher-soleil", name: "Coucher de soleil", type: "APP_BG", priceCoins: 500, requiredLevel: 22, borderClass: "app-theme-coucher-soleil", rarity: "epic", description: "Chaud et energique." },
+    { slug: "appbg-sakura", name: "Sakura", type: "APP_BG", priceCoins: 650, requiredLevel: 28, borderClass: "app-theme-sakura", rarity: "epic", description: "Doux et pastel." },
+    { slug: "appbg-ocean", name: "Océan", type: "APP_BG", priceCoins: 650, requiredLevel: 30, borderClass: "app-theme-ocean", rarity: "epic", description: "Profond et apaisant." },
+    { slug: "appbg-tableau-noir", name: "Tableau noir", type: "APP_BG", priceCoins: 350, requiredLevel: 16, borderClass: "app-theme-tableau-noir", rarity: "rare", description: "Style cahier de cours." },
   ] as const;
 
   for (const c of cosmetics) {

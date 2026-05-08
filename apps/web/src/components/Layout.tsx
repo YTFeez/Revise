@@ -6,7 +6,20 @@ import { AvatarBorder } from "./AvatarBorder";
 import { getSocket } from "../lib/socket";
 
 function setBodyTheme(themeClass: string | null | undefined) {
-  const themes = ["theme-nebula", "theme-synthwave", "theme-emerald-night", "theme-obsidian"];
+  const themes = [
+    "theme-nebula",
+    "theme-synthwave",
+    "theme-emerald-night",
+    "theme-obsidian",
+    "app-theme-classique-clair",
+    "app-theme-nuit-profonde",
+    "app-theme-foret",
+    "app-theme-cosmos",
+    "app-theme-coucher-soleil",
+    "app-theme-sakura",
+    "app-theme-ocean",
+    "app-theme-tableau-noir",
+  ];
   for (const t of themes) document.body.classList.remove(t);
   if (themeClass) document.body.classList.add(themeClass);
 }

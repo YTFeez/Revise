@@ -100,6 +100,9 @@ export default function InventoryPage() {
             {it.cosmetic.type === "BORDER" && (
               <div className={`mt-3 h-12 w-12 rounded-full bg-bg-soft ${it.cosmetic.borderClass || ""}`} />
             )}
+            {it.cosmetic.type === "APP_BG" && (
+              <div className={`theme-preview mt-3 ${it.cosmetic.borderClass || ""}`} />
+            )}
 
             <div className="mt-3 flex gap-2">
               {it.cosmetic.type === "BORDER" && (
