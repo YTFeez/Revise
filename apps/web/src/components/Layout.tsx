@@ -62,6 +62,18 @@ export default function Layout() {
                 {n.label}
               </NavLink>
             ))}
+            {user?.isAdmin && (
+              <NavLink
+                to="/admin"
+                className={({ isActive }) =>
+                  `px-3 py-1.5 rounded-lg text-sm font-semibold ${
+                    isActive ? "bg-brand-500/15 text-white border border-brand-400/30" : "text-brand-200 hover:text-white hover:bg-brand-500/10"
+                  }`
+                }
+              >
+                Admin
+              </NavLink>
+            )}
           </nav>
           <div className="ml-auto flex items-center gap-3">
             {user ? (
@@ -108,6 +120,18 @@ export default function Layout() {
               {n.label}
             </NavLink>
           ))}
+          {user?.isAdmin && (
+            <NavLink
+              to="/admin"
+              className={({ isActive }) =>
+                `px-3 py-1.5 rounded-lg text-xs font-semibold ${
+                  isActive ? "bg-brand-500/15 text-white border border-brand-400/30" : "text-brand-200 hover:text-white hover:bg-brand-500/10"
+                }`
+              }
+            >
+              Admin
+            </NavLink>
+          )}
         </nav>
       </header>
 
