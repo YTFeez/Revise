@@ -7,20 +7,37 @@ import { toPublicUser } from "../lib/publicUser.js";
 const PurchaseSchema = z.object({ cosmeticSlug: z.string() });
 const EquipSchema = z.object({ cosmeticSlug: z.string().nullable(), type: z.enum(["BORDER", "HAT", "BG"]) });
 
+async function tryGetUserIdFromRequest(request: any): Promise<string | null> {
+  try {
+    const auth = request.headers?.authorization as string | undefined;
+    if (auth?.startsWith("Bearer ")) {
+      const token = auth.slice("Bearer ".length).trim();
+      if (!token) return null;
+      const decoded = (request.server as any).jwt.verify(token) as { sub: string };
+      return decoded.sub ?? null;
+    }
+  } catch {
+    // ignore
+  }
+  try {
+    const token = request.cookies?.["rp_token"];
+    if (!token) return null;
+    const decoded = (request.server as any).jwt.verify(token) as { sub: string };
+    return decoded.sub ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export const shopRoutes: FastifyPluginAsync = async (app) => {
   // tous les cosmetiques + indication "owned" pour l'utilisateur courant si connecte
   app.get("/cosmetics", async (request) => {
     const cosmetics = await prisma.cosmetic.findMany({ orderBy: [{ requiredLevel: "asc" }, { priceCoins: "asc" }] });
     let owned = new Set<string>();
-    try {
-      const token = request.cookies["rp_token"];
-      if (token) {
-        const decoded = (request.server as any).jwt.verify(token) as { sub: string };
-        const ucs = await prisma.userCosmetic.findMany({ where: { userId: decoded.sub } });
-        owned = new Set(ucs.map((u) => u.cosmeticId));
-      }
-    } catch {
-      /* anonyme */
+    const userId = await tryGetUserIdFromRequest(request);
+    if (userId) {
+      const ucs = await prisma.userCosmetic.findMany({ where: { userId } });
+      owned = new Set(ucs.map((u) => u.cosmeticId));
     }
     return cosmetics.map((c) => ({
       id: c.id,
@@ -60,6 +77,10 @@ export const shopRoutes: FastifyPluginAsync = async (app) => {
 
   // mes cosmetiques
   app.get("/me/cosmetics", { preHandler: requireAuth }, async (request) => {
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { id: request.userId! },
+      select: { equippedBorder: true, equippedHat: true, equippedBg: true },
+    });
     const list = await prisma.userCosmetic.findMany({
       where: { userId: request.userId! },
       include: { cosmetic: true },
@@ -68,7 +89,11 @@ export const shopRoutes: FastifyPluginAsync = async (app) => {
     return list.map((uc) => ({
       id: uc.id,
       acquiredAt: uc.acquiredAt,
-      equipped: uc.equipped,
+      equipped:
+        (uc.cosmetic.type === "BORDER" && user.equippedBorder === uc.cosmetic.slug) ||
+        (uc.cosmetic.type === "HAT" && user.equippedHat === uc.cosmetic.slug) ||
+        (uc.cosmetic.type === "BG" && user.equippedBg === uc.cosmetic.slug) ||
+        false,
       cosmetic: {
         id: uc.cosmetic.id,
         slug: uc.cosmetic.slug,
@@ -103,6 +128,7 @@ export const shopRoutes: FastifyPluginAsync = async (app) => {
     await prisma.$transaction([
       prisma.user.update({ where: { id: userId }, data: { coins: { decrement: cosmetic.priceCoins } } }),
       prisma.userCosmetic.create({ data: { userId, cosmeticId: cosmetic.id } }),
+      prisma.purchase.create({ data: { userId, cosmeticId: cosmetic.id, priceCoins: cosmetic.priceCoins } }),
     ]);
     const updated = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
     return reply.send({ user: toPublicUser(updated), cosmeticSlug: cosmetic.slug });

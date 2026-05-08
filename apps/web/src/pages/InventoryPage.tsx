@@ -23,26 +23,37 @@ export default function InventoryPage() {
   const [filter, setFilter] = useState<"ALL" | "BORDER" | "HAT" | "BG" | "BADGE">("ALL");
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const query = q.trim().toLowerCase();
     return items.filter((i) => (filter === "ALL" ? true : i.cosmetic.type === filter) && (!query || i.cosmetic.name.toLowerCase().includes(query)));
   }, [items, filter, q]);
 
-  useEffect(() => {
-    api<OwnedCosmetic[]>("/me/cosmetics").then(setItems).catch(() => undefined);
-  }, []);
+  async function refresh() {
+    try {
+      setError(null);
+      const next = await api<OwnedCosmetic[]>("/me/cosmetics");
+      setItems(next);
+    } catch (e: any) {
+      setError(e?.message || "Impossible de charger l'inventaire");
+    }
+  }
+
+  useEffect(() => { refresh(); }, []);
 
   async function equip(type: "BORDER" | "HAT" | "BG", slug: string | null) {
     setBusy(`${type}:${slug ?? "none"}`);
+    setError(null);
     try {
       const data = await api<{ user: PublicUser }>("/cosmetics/equip", {
         method: "POST",
         body: JSON.stringify({ cosmeticSlug: slug, type }),
       });
       setUser(data.user);
-      const next = await api<OwnedCosmetic[]>("/me/cosmetics");
-      setItems(next);
+      await refresh();
+    } catch (e: any) {
+      setError(e?.message || "Action impossible");
     } finally {
       setBusy(null);
     }
@@ -58,6 +69,7 @@ export default function InventoryPage() {
           </div>
           {user && <div className="pill-violet">{user.coins} coins</div>}
         </div>
+        {error && <div className="mt-3 text-sm text-rose-300">{error}</div>}
         <div className="mt-4 flex flex-wrap gap-2 items-center">
           <input className="input w-full sm:w-64" placeholder="Rechercher..." value={q} onChange={(e) => setQ(e.target.value)} />
           <div className="flex items-center bg-bg-soft rounded-lg p-0.5 text-xs">
@@ -79,7 +91,10 @@ export default function InventoryPage() {
           <div key={it.id} className="card p-4">
             <div className="flex items-center justify-between">
               <div className="font-semibold">{it.cosmetic.name}</div>
-              <span className="pill-zinc text-[10px] uppercase">{it.cosmetic.rarity}</span>
+              <div className="flex items-center gap-2">
+                {it.equipped && <span className="pill-amber text-[10px] uppercase">Equipe</span>}
+                <span className="pill-zinc text-[10px] uppercase">{it.cosmetic.rarity}</span>
+              </div>
             </div>
             <div className="text-xs text-zinc-400 mt-1">Type: {it.cosmetic.type}</div>
             {it.cosmetic.type === "BORDER" && (
@@ -88,18 +103,35 @@ export default function InventoryPage() {
 
             <div className="mt-3 flex gap-2">
               {it.cosmetic.type === "BORDER" && (
-                <button className="btn-primary w-full" disabled={busy !== null} onClick={() => equip("BORDER", it.cosmetic.slug)}>
-                  Equiper
+                <button
+                  className={it.equipped ? "btn-outline w-full" : "btn-primary w-full"}
+                  disabled={busy !== null}
+                  onClick={() => equip("BORDER", it.equipped ? null : it.cosmetic.slug)}
+                >
+                  {it.equipped ? "Retirer" : "Equiper"}
                 </button>
               )}
               {it.cosmetic.type === "HAT" && (
-                <button className="btn-primary w-full" disabled={busy !== null} onClick={() => equip("HAT", it.cosmetic.slug)}>
-                  Equiper
+                <button
+                  className={it.equipped ? "btn-outline w-full" : "btn-primary w-full"}
+                  disabled={busy !== null}
+                  onClick={() => equip("HAT", it.equipped ? null : it.cosmetic.slug)}
+                >
+                  {it.equipped ? "Retirer" : "Equiper"}
                 </button>
               )}
               {it.cosmetic.type === "BG" && (
-                <button className="btn-primary w-full" disabled={busy !== null} onClick={() => equip("BG", it.cosmetic.slug)}>
-                  Equiper
+                <button
+                  className={it.equipped ? "btn-outline w-full" : "btn-primary w-full"}
+                  disabled={busy !== null}
+                  onClick={() => equip("BG", it.equipped ? null : it.cosmetic.slug)}
+                >
+                  {it.equipped ? "Retirer" : "Equiper"}
+                </button>
+              )}
+              {it.cosmetic.type === "BADGE" && (
+                <button className="btn-outline w-full" disabled title="Les badges arrivent bientot">
+                  Badge (bientot)
                 </button>
               )}
             </div>
