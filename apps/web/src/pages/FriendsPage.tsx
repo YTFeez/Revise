@@ -14,9 +14,9 @@ export default function FriendsPage() {
   async function refresh() {
     setError(null);
     await Promise.all([
-      api("/friends").then(setFriends),
-      api("/friends/requests/in").then(setIncoming),
-      api("/friends/requests/out").then(setOutgoing),
+      api<Array<{ id: string; user: MiniUser; since: string }>>("/friends").then(setFriends),
+      api<Array<{ id: string; from: MiniUser; createdAt: string }>>("/friends/requests/in").then(setIncoming),
+      api<Array<{ id: string; to: MiniUser; createdAt: string }>>("/friends/requests/out").then(setOutgoing),
     ]).catch((e: any) => setError(e?.message || "Erreur"));
   }
 
