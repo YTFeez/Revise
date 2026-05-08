@@ -3,8 +3,9 @@ import bcrypt from "bcryptjs";
 import { LoginSchema, RegisterSchema } from "@revise-plus/shared";
 import { prisma } from "../prisma.js";
 import { COOKIE_NAME, clearAuthCookie, requireAuth, setAuthCookie } from "../auth.js";
-import { toPublicUser } from "../lib/publicUser.js";
+import { toPublicUserWithCosmetics } from "../lib/publicUser.js";
 import { auditLog } from "../lib/audit.js";
+import { MAX_LEVEL, totalXpForLevel } from "@revise-plus/shared";
 
 const gradeIn: Record<string, "SIXIEME" | "CINQUIEME" | "QUATRIEME" | "TROISIEME"> = {
   "6e": "SIXIEME",
@@ -14,6 +15,28 @@ const gradeIn: Record<string, "SIXIEME" | "CINQUIEME" | "QUATRIEME" | "TROISIEME
 };
 
 export const authRoutes: FastifyPluginAsync = async (app) => {
+  async function ensureAdminPerks(userId: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { isAdmin: true, level: true, coins: true } });
+    if (!user?.isAdmin) return;
+
+    const targetLevel = MAX_LEVEL;
+    const targetCoins = 999_999_999;
+    if (user.level !== targetLevel || user.coins < targetCoins) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { level: targetLevel, totalXp: totalXpForLevel(targetLevel), coins: targetCoins },
+      });
+    }
+
+    const cosmetics = await prisma.cosmetic.findMany({ select: { id: true } });
+    if (cosmetics.length) {
+      await prisma.userCosmetic.createMany({
+        data: cosmetics.map((c) => ({ userId, cosmeticId: c.id })),
+        skipDuplicates: true,
+      });
+    }
+  }
+
   app.post("/auth/register", async (request, reply) => {
     const parsed = RegisterSchema.safeParse(request.body);
     if (!parsed.success) {
@@ -37,7 +60,9 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     const token = app.jwt.sign({ sub: user.id, isAdmin: user.isAdmin });
     setAuthCookie(reply, token);
     await auditLog({ request, userId: user.id, action: "REGISTER", meta: { email: user.email } });
-    return reply.send({ user: toPublicUser(user), token });
+    await ensureAdminPerks(user.id);
+    const updated = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+    return reply.send({ user: await toPublicUserWithCosmetics(updated), token });
   });
 
   app.post("/auth/login", async (request, reply) => {
@@ -52,7 +77,9 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     const token = app.jwt.sign({ sub: user.id, isAdmin: user.isAdmin });
     setAuthCookie(reply, token);
     await auditLog({ request, userId: user.id, action: "LOGIN" });
-    return reply.send({ user: toPublicUser(user), token });
+    await ensureAdminPerks(user.id);
+    const updated = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+    return reply.send({ user: await toPublicUserWithCosmetics(updated), token });
   });
 
   app.post("/auth/logout", async (_req, reply) => {
@@ -66,7 +93,9 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       clearAuthCookie(reply);
       return reply.code(401).send({ error: "Session invalide" });
     }
-    return reply.send({ user: toPublicUser(user) });
+    await ensureAdminPerks(user.id);
+    const updated = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+    return reply.send({ user: await toPublicUserWithCosmetics(updated) });
   });
 
   // helper interne pour debug : liste les cookies

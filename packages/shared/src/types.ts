@@ -15,6 +15,8 @@ export interface PublicUser {
   equippedBorder?: string | null;
   equippedHat?: string | null;
   equippedBg?: string | null;
+  equippedBorderClass?: string | null;
+  equippedBgClass?: string | null;
   avatar?: AvatarConfig | null;
   rankName: string;
   isAdmin?: boolean;

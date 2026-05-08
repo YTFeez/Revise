@@ -32,11 +32,20 @@ async function main() {
     { slug: "border-green-star", name: "Cadre vert etoile", type: "BORDER", priceCoins: 350, requiredLevel: 31, borderClass: "ring-2 ring-emerald-400", rarity: "rare", description: "Cadre du Savant." },
     { slug: "border-gold", name: "Cadre or + couronne", type: "BORDER", priceCoins: 800, requiredLevel: 61, borderClass: "ring-2 ring-amber-400", rarity: "epic", description: "Cadre du Genie." },
     { slug: "border-rainbow", name: "Cadre arc-en-ciel", type: "BORDER", priceCoins: 5000, requiredLevel: 801, borderClass: "rank-rainbow", rarity: "legendary", description: "Reserve aux Legendes." },
+
+    // premium borders (utilisent des classes CSS dans apps/web/src/index.css)
+    { slug: "border-neon-cyan", name: "Cadre Neon Cyan", type: "BORDER", priceCoins: 900, requiredLevel: 50, borderClass: "cos-border-neon-cyan", rarity: "epic", description: "Un halo futuriste qui brille dans le noir." },
+    { slug: "border-fire", name: "Cadre Flamme", type: "BORDER", priceCoins: 1800, requiredLevel: 120, borderClass: "cos-border-fire", rarity: "legendary", description: "Une couronne de feu en mouvement." },
+    { slug: "border-obsidian", name: "Cadre Obsidienne", type: "BORDER", priceCoins: 400, requiredLevel: 25, borderClass: "cos-border-obsidian", rarity: "rare", description: "Sobre, lourd, classe." },
+
     { slug: "hat-sumo", name: "Chignon de sumo", type: "HAT", priceCoins: 100, requiredLevel: 5, rarity: "common" },
     { slug: "hat-graduate", name: "Toque de diplome", type: "HAT", priceCoins: 250, requiredLevel: 20, rarity: "rare" },
     { slug: "hat-crown", name: "Couronne d'or", type: "HAT", priceCoins: 600, requiredLevel: 61, rarity: "epic" },
-    { slug: "bg-stars", name: "Fond etoile", type: "BG", priceCoins: 200, requiredLevel: 10, rarity: "common" },
-    { slug: "bg-galaxy", name: "Fond galaxie", type: "BG", priceCoins: 1500, requiredLevel: 121, rarity: "epic" },
+
+    // backgrounds: on réutilise borderClass comme "classe de fond"
+    { slug: "bg-stars", name: "Fond etoile", type: "BG", priceCoins: 200, requiredLevel: 10, borderClass: "bg-bg-soft", rarity: "common" },
+    { slug: "bg-galaxy", name: "Fond galaxie", type: "BG", priceCoins: 1500, requiredLevel: 121, borderClass: "cos-bg-galaxy", rarity: "epic" },
+    { slug: "bg-sunset", name: "Fond coucher de soleil", type: "BG", priceCoins: 700, requiredLevel: 60, borderClass: "cos-bg-sunset", rarity: "rare" },
     { slug: "badge-streak", name: "Badge serie 7 jours", type: "BADGE", priceCoins: 75, requiredLevel: 1, rarity: "common" },
   ] as const;
 

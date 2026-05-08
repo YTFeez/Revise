@@ -61,7 +61,15 @@ export default function AvatarPage() {
       <p className="text-sm text-zinc-400 mb-5">Ton cadre evolue avec ton niveau, et tu peux en acheter de speciaux dans la boutique.</p>
 
       <div className="card p-6 flex flex-col items-center gap-3">
-        <AvatarBorder level={user.level} username={user.username} size={120} showBadge avatar={avatar} />
+        <AvatarBorder
+          level={user.level}
+          username={user.username}
+          size={120}
+          showBadge
+          avatar={avatar}
+          borderClass={user.equippedBorderClass ?? undefined}
+          bgClass={user.equippedBgClass ?? undefined}
+        />
         <div className="text-lg font-semibold">{user.username}</div>
         <div className={`text-sm ${rank.textClass}`}>Niv. {user.level} - {rank.name}</div>
       </div>
@@ -90,7 +98,15 @@ export default function AvatarPage() {
           <div className="rounded-2xl border border-bg-ring bg-bg-soft p-4">
             <div className="text-xs text-zinc-400 mb-2">Apercu</div>
             <div className="flex items-center gap-4">
-              <AvatarBorder level={user.level} username={user.username} size={96} avatar={avatar} showBadge />
+              <AvatarBorder
+                level={user.level}
+                username={user.username}
+                size={96}
+                avatar={avatar}
+                showBadge
+                borderClass={user.equippedBorderClass ?? undefined}
+                bgClass={user.equippedBgClass ?? undefined}
+              />
               <div>
                 <div className="font-semibold">Cadre: {rank.name}</div>
                 <div className="text-xs text-zinc-400">Tu peux equiper un cadre special plus bas.</div>

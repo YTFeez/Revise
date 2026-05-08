@@ -6,18 +6,19 @@ interface Props {
   username: string;
   size?: number;
   borderClass?: string;
+  bgClass?: string;
   showBadge?: boolean;
   avatar?: AvatarConfig | null;
 }
 
-export function AvatarBorder({ level, username, size = 64, borderClass, showBadge = false, avatar }: Props) {
+export function AvatarBorder({ level, username, size = 64, borderClass, bgClass, showBadge = false, avatar }: Props) {
   const rank = rankForLevel(level);
   const initials = username.slice(0, 2).toUpperCase();
   const ring = borderClass || rank.borderClass;
   return (
     <div className="relative inline-flex" style={{ width: size, height: size }}>
       <div
-        className={`relative rounded-full bg-bg-soft flex items-center justify-center text-zinc-200 font-semibold ${ring}`}
+        className={`relative rounded-full bg-bg-soft flex items-center justify-center text-zinc-200 font-semibold ${bgClass || ""} ${ring}`}
         style={{ width: size, height: size, fontSize: Math.max(10, size / 3) }}
       >
         {avatar ? (

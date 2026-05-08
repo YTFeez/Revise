@@ -72,6 +72,54 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* ---- Cosmetiques "premium" (cadres/fonds) ---- */
+.cos-border-neon-cyan { position: relative; }
+.cos-border-neon-cyan::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  padding: 3px;
+  background: radial-gradient(circle at 30% 30%, rgba(34,211,238,.9), rgba(34,211,238,.25) 35%, rgba(0,0,0,0) 70%),
+              conic-gradient(from 180deg, #22d3ee, #60a5fa, #a78bfa, #22d3ee);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  filter: drop-shadow(0 0 14px rgba(34,211,238,.35));
+}
+
+.cos-border-fire { position: relative; }
+.cos-border-fire::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  padding: 3px;
+  background: conic-gradient(from 0deg, #fb7185, #f97316, #fbbf24, #f97316, #fb7185);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rainbow-spin 6s linear infinite;
+  filter: drop-shadow(0 0 14px rgba(249,115,22,.35));
+}
+
+.cos-border-obsidian { @apply ring-2 ring-zinc-200/30 shadow-[0_0_0_3px_rgba(0,0,0,.25)] ; }
+
+.cos-bg-galaxy {
+  background: radial-gradient(circle at 20% 30%, rgba(167,139,250,.35), transparent 55%),
+              radial-gradient(circle at 70% 20%, rgba(34,211,238,.25), transparent 60%),
+              radial-gradient(circle at 50% 80%, rgba(244,63,94,.18), transparent 55%),
+              linear-gradient(180deg, rgba(24,24,40,.9), rgba(15,16,24,1));
+}
+
+.cos-bg-sunset {
+  background: radial-gradient(circle at 20% 20%, rgba(251,191,36,.35), transparent 55%),
+              radial-gradient(circle at 80% 30%, rgba(251,113,133,.30), transparent 55%),
+              linear-gradient(180deg, rgba(39,39,70,.95), rgba(15,16,24,1));
+}
+
 .rank-text-rainbow {
   background: linear-gradient(90deg, #ef4444, #eab308, #22c55e, #06b6d4, #a855f7);
   -webkit-background-clip: text;
