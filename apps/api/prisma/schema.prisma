@@ -110,6 +110,7 @@ model User {
   duelHosts        Duel[]          @relation("DuelHost")
   duelGuests       Duel[]          @relation("DuelGuest")
   devices          UserDevice[]
+  purchases        Purchase[]
 }
 
 model UserDevice {
@@ -313,6 +314,7 @@ model Quiz {
   course    Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
   questions Question[]
   attempts  Attempt[]
+  duels     Duel[]
 }
 
 model Question {
@@ -386,6 +388,7 @@ model Cosmetic {
 
   ownedBy UserCosmetic[]
   purchases Purchase[]
+  shopListings ShopListing[]
 }
 
 model UserCosmetic {
