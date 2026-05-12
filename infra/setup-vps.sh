@@ -48,6 +48,7 @@ yes | ufw enable || true
 
 echo "==> Repertoire de l'app"
 mkdir -p "${APP_DIR}"
+mkdir -p "${APP_DIR}/car-game"
 
 cat > "${APP_DIR}/.env.api" <<EOF
 DATABASE_URL="postgresql://${DB_USER}:${DB_PASS}@localhost:5432/${DB_NAME}?schema=public"
@@ -82,6 +83,15 @@ server {
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_set_header Host \$host;
+    }
+
+    location = /jeu {
+        return 302 /jeu/;
+    }
+
+    location /jeu/ {
+        alias ${APP_DIR}/car-game/;
+        index index.html;
     }
 
     location / {

@@ -32,6 +32,21 @@ export function clearAuthCookie(reply: FastifyReply) {
   reply.clearCookie(COOKIE_NAME, { path: "/" });
 }
 
+/** Remplit `userId` si JWT valide ; sinon laisse vide (pas d'erreur HTTP). */
+export async function optionalAuth(request: FastifyRequest, _reply: FastifyReply) {
+  request.userId = undefined;
+  request.isAdmin = false;
+  try {
+    const token = getBearerToken(request) ?? request.cookies[COOKIE_NAME];
+    if (!token) return;
+    const decoded = (request.server as FastifyInstance).jwt.verify<{ sub: string; isAdmin?: boolean }>(token);
+    request.userId = decoded.sub;
+    request.isAdmin = !!decoded.isAdmin;
+  } catch {
+    /* session absente ou invalide */
+  }
+}
+
 export async function requireAuth(request: FastifyRequest, reply: FastifyReply) {
   try {
     const token = getBearerToken(request) ?? request.cookies[COOKIE_NAME];

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Street Circuit — arcade multijoueur</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; background: #07090e; font-family: system-ui, sans-serif; touch-action: none; }
+    #c { display: block; width: 100%; height: 100%; }
+    #meta {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 12;
+      display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center;
+      padding: 0.5rem 0.75rem; background: linear-gradient(180deg, rgba(0,0,0,.75), transparent);
+      color: #dbe4f0; font-size: 0.78rem;
+    }
+    #meta strong { color: #ffc400; }
+    #meta button {
+      background: #1e2430; border: 1px solid #334155; color: #e8eef8;
+      padding: 0.25rem 0.55rem; border-radius: 6px; cursor: pointer; font-size: 0.75rem;
+    }
+    #meta button:hover { background: #2a3344; }
+    #meta button:disabled { opacity: 0.45; cursor: not-allowed; }
+    #meta .pill { background: #111823; border-radius: 999px; padding: 0.15rem 0.55rem; border: 1px solid #243044; }
+    #hud {
+      position: fixed; top: 3.1rem; right: 0.6rem; z-index: 11;
+      color: #e8eef8; font-size: 0.95rem; text-shadow: 0 1px 6px #000; text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    #hud .big { font-size: 1.55rem; color: #ffc400; font-weight: 700; }
+    #ui {
+      position: fixed; left: 0.6rem; bottom: 0.6rem; z-index: 11;
+      color: #b8c4d8; font-size: 0.72rem; line-height: 1.5; max-width: 19rem;
+      text-shadow: 0 1px 4px #000;
+    }
+    #ui kbd { background: #1a2230; padding: 0.08rem 0.28rem; border-radius: 4px; border: 1px solid #334155; }
+    #quests { position: fixed; left: 0.6rem; top: 3.4rem; z-index: 11; max-width: 15rem; font-size: 0.68rem; color: #9aacbf; }
+    #quests li { margin: 0.15rem 0; list-style: none; }
+    #quests li.done { color: #5eead4; text-decoration: line-through; }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div id="meta">
+    <span class="pill" id="authLine">Chargement…</span>
+    <span class="pill" id="creditLine">—</span>
+    <span class="pill" id="vehLine">Voiture : —</span>
+    <span class="pill" id="netLine">Réseau : …</span>
+    <select id="vehPick" style="display:none"></select>
+    <button type="button" id="btnEquip">Choisir</button>
+    <button type="button" id="btnBuy">Acheter</button>
+    <button type="button" id="btnRestart">Nouvelle course</button>
+  </div>
+  <ul id="quests"></ul>
+  <div id="hud">
+    <div class="big"><span id="lap">0</span> / <span id="target">3</span> tours</div>
+    <div id="speed">0 km/h</div>
+    <div id="timer" style="font-size:0.8rem;margin-top:0.25rem;opacity:.85"></div>
+  </div>
+  <div id="ui">
+    <strong>Contrôles</strong> — <kbd>W</kbd><kbd>S</kbd> / <kbd>↑</kbd><kbd>↓</kbd> gaz &amp; frein.
+    <kbd>A</kbd><kbd>D</kbd> / <kbd>←</kbd><kbd>→</kbd> direction.<br>
+    <span id="msg">Connecte-toi sur Revise+ (même site) pour crédits, garage et sauvegarde des courses.</span>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="./game.js"></script>
+</body>
+</html>

@@ -37,6 +37,15 @@ echo "==> Sync static frontend vers ${APP_DIR}/web-dist"
 mkdir -p "${APP_DIR}/web-dist"
 rsync -a --delete apps/web/dist/ "${APP_DIR}/web-dist/"
 
+echo "==> Sync jeu (URL /jeu/) — dossier infra/car-game/"
+CAR_DIR="${REPO_DIR}/infra/car-game"
+if [[ -d "${CAR_DIR}" ]]; then
+  mkdir -p "${APP_DIR}/car-game"
+  rsync -a "${CAR_DIR}/" "${APP_DIR}/car-game/"
+else
+  echo "WARN: ${CAR_DIR} introuvable — pas de fichiers /jeu/"
+fi
+
 echo "==> (Re)demarrage de l'API avec PM2"
 cd apps/api
 pm2 startOrReload "${REPO_DIR}/infra/ecosystem.config.cjs" --update-env
